@@ -16,6 +16,7 @@
 
 import XCTest
 import PersonalityInsightsV2
+import OHHTTPStubs
 
 class PersonalityInsightsTests: XCTestCase {
 
@@ -101,6 +102,13 @@ class PersonalityInsightsTests: XCTestCase {
     
     /** Analyze the text of Kennedy's speech. */
     func testProfile() {
+        
+        // Setup stubs for this test
+        stub(isHost("gateway.watsonplatform.net")) { request in
+            // Load the fixture (file to pass in for stub test)
+            return fixture(OHPathForFile("stubTest.txt", self.dynamicType)!, headers: [:])
+        }
+        
         let description = "Analyze the text of Kennedy's speech."
         let expectation = expectationWithDescription(description)
 
@@ -109,6 +117,9 @@ class PersonalityInsightsTests: XCTestCase {
             expectation.fulfill()
         }
         waitForExpectations()
+        
+        // Remove stubs when test is over
+        OHHTTPStubs.removeAllStubs()
     }
     
     /** Analyze content items. */

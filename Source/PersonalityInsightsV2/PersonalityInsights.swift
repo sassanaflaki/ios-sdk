@@ -243,6 +243,20 @@ public class PersonalityInsights {
         // execute REST request
         Alamofire.request(request)
             .authenticate(user: username, password: password)
+//            .responseData { response in
+//                let file = "test.txt"
+//                let data = response.data
+//                
+//                if let dir = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.AllDomainsMask, true).first {
+//                    let path = NSURL(fileURLWithPath: dir).URLByAppendingPathComponent(file)
+//                    
+//                    //writing
+//                    do {
+//                        try data?.writeToURL(path, options: NSDataWritingOptions.DataWritingAtomic)
+//                    }
+//                    catch {/* error handling here */}
+//                }
+//            }
             .responseObject(dataToError: dataToError) {
                 (response: Response<Profile, NSError>) in
                 switch response.result {

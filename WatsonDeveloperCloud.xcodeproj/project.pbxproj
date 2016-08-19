@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		120EC7821D624DA7006B80A5 /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 120EC7811D624DA7006B80A5 /* OHHTTPStubs.framework */; };
+		120EC7831D624EEA006B80A5 /* OHHTTPStubs.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 120EC7811D624DA7006B80A5 /* OHHTTPStubs.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		120EC7851D64FA67006B80A5 /* stubTest.txt in Resources */ = {isa = PBXBuildFile; fileRef = 120EC7841D64FA67006B80A5 /* stubTest.txt */; };
 		121F96901D2D8A9600E295B0 /* Ranker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121F968F1D2D8A9600E295B0 /* Ranker.swift */; };
 		121F96921D2EAD1600E295B0 /* Ranking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121F96911D2EAD1600E295B0 /* Ranking.swift */; };
 		121F96941D2EF66400E295B0 /* RankerDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 121F96931D2EF66400E295B0 /* RankerDetails.swift */; };
@@ -551,6 +554,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				120EC7831D624EEA006B80A5 /* OHHTTPStubs.framework in CopyFiles */,
 				7A9EE3C01D4FD91900FA2932 /* Freddy.framework in CopyFiles */,
 				7A9EE3BF1D4FD91400FA2932 /* Alamofire.framework in CopyFiles */,
 			);
@@ -692,6 +696,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		120EC7811D624DA7006B80A5 /* OHHTTPStubs.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OHHTTPStubs.framework; path = Carthage/Build/iOS/OHHTTPStubs.framework; sourceTree = "<group>"; };
+		120EC7841D64FA67006B80A5 /* stubTest.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = stubTest.txt; sourceTree = "<group>"; };
 		121F968F1D2D8A9600E295B0 /* Ranker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ranker.swift; sourceTree = "<group>"; };
 		121F96911D2EAD1600E295B0 /* Ranking.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ranking.swift; sourceTree = "<group>"; };
 		121F96931D2EF66400E295B0 /* RankerDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RankerDetails.swift; sourceTree = "<group>"; };
@@ -1141,6 +1147,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7AAAF48F1CEEA07900B74848 /* PersonalityInsightsV2.framework in Frameworks */,
+				120EC7821D624DA7006B80A5 /* OHHTTPStubs.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1470,6 +1477,7 @@
 		7A0F97301C232CB5004C01C0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				120EC7811D624DA7006B80A5 /* OHHTTPStubs.framework */,
 				7A61176B1CB5ADC2009A4DA1 /* Alamofire.framework */,
 				7A61176C1CB5ADC2009A4DA1 /* Freddy.framework */,
 				7A61176D1CB5ADC2009A4DA1 /* Starscream.framework */,
@@ -1571,6 +1579,7 @@
 			children = (
 				7A61175C1CB598D9009A4DA1 /* KennedySpeech.txt */,
 				7A61175D1CB598D9009A4DA1 /* MobyDickIntro.txt */,
+				120EC7841D64FA67006B80A5 /* stubTest.txt */,
 				7A61175E1CB598D9009A4DA1 /* PersonalityInsightsTests.swift */,
 			);
 			path = Tests;
@@ -3199,6 +3208,7 @@
 			files = (
 				7AAAF4A31CEEA0A000B74848 /* Credentials.plist in Resources */,
 				7AAAF4A01CEEA09200B74848 /* KennedySpeech.txt in Resources */,
+				120EC7851D64FA67006B80A5 /* stubTest.txt in Resources */,
 				7AAAF4A11CEEA09200B74848 /* MobyDickIntro.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4642,11 +4652,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "Source/SupportingFiles/Info-Tests.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.ibm.watson.developer-cloud.PersonalityInsightsV2Tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -4654,6 +4670,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "Source/SupportingFiles/Info-Tests.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
