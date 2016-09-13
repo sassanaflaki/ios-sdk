@@ -16,6 +16,7 @@
 
 import XCTest
 import DialogV1
+import OHHTTPStubs
 
 class DialogTests: XCTestCase {
 
@@ -172,6 +173,17 @@ class DialogTests: XCTestCase {
 
     /** Create and delete a dialog application. */
     func testCreateDelete() {
+        
+        stub(isHost("gateway.watsonplatform.net") && isMethodPOST()) { request in
+            print("stubbing create dialog")
+            return fixture(OHPathForFile("createDialog.txt", self.dynamicType)!, headers: [:])
+        }
+        
+        stub(isHost("gateway.watsonplatform.net") && isMethodDELETE()) { request in
+            print("stubbing delete dialog")
+            return fixture(OHPathForFile("deleteDialog.txt", self.dynamicType)!, headers: [:])
+        }
+        
         let description1 = "Create a dialog application."
         let expectation1 = expectationWithDescription(description1)
         var dialogID: DialogID?
@@ -195,6 +207,8 @@ class DialogTests: XCTestCase {
             expectation2.fulfill()
         }
         waitForExpectations()
+        
+        OHHTTPStubs.removeAllStubs()
     }
 
     /** Download the dialog file associated with the test application. */
@@ -652,6 +666,12 @@ class DialogTests: XCTestCase {
 
     /** Delete a dialog that doesn't exist. */
     func testDeleteInvalidDialogID() {
+        
+        stub(isHost("gateway.watsonplatform.net") && isMethodDELETE()) { request in
+            print("stubbing invalid delete dialog")
+            return fixture(OHPathForFile("deleteInvalidDialog.txt", self.dynamicType)!, headers: [:])
+        }
+        
         let description = "Delete a dialog that doesn't exist."
         let expectation = expectationWithDescription(description)
 
@@ -663,6 +683,8 @@ class DialogTests: XCTestCase {
 
         dialog.deleteDialog(invalidID, failure: failure, success: failWithResult)
         waitForExpectations()
+        
+        OHHTTPStubs.removeAllStubs()
     }
 
     /** Get the dialog file for a dialog that doesn't exist. */

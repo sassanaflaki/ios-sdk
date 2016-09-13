@@ -52,6 +52,15 @@
 		12DBA9371D512D9100966E41 /* ranker_train_data.csv in Resources */ = {isa = PBXBuildFile; fileRef = 12DBA9361D512D9100966E41 /* ranker_train_data.csv */; };
 		12DBA93A1D52435900966E41 /* ranker_test_data.csv in Resources */ = {isa = PBXBuildFile; fileRef = 12DBA9381D52405E00966E41 /* ranker_test_data.csv */; };
 		12DEF7BD1D3DD0F8009A7FA0 /* SearchAndRankResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12DEF7BC1D3DD0F8009A7FA0 /* SearchAndRankResponse.swift */; };
+		12E337DB1D6CFCD000F3E5DE /* createDialog.txt in Resources */ = {isa = PBXBuildFile; fileRef = 12E337DA1D6CFCD000F3E5DE /* createDialog.txt */; };
+		12E337DD1D6CFCE800F3E5DE /* deleteDialog.txt in Resources */ = {isa = PBXBuildFile; fileRef = 12E337DC1D6CFCE800F3E5DE /* deleteDialog.txt */; };
+		12E337DE1D6CFD1F00F3E5DE /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 120EC7811D624DA7006B80A5 /* OHHTTPStubs.framework */; };
+		12E337DF1D6CFE9400F3E5DE /* OHHTTPStubs.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 120EC7811D624DA7006B80A5 /* OHHTTPStubs.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		12E337E11D6E27BE00F3E5DE /* deleteInvalidDialog.txt in Resources */ = {isa = PBXBuildFile; fileRef = 12E337E01D6E27BE00F3E5DE /* deleteInvalidDialog.txt */; };
+		12E337E21D6F568B00F3E5DE /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 120EC7811D624DA7006B80A5 /* OHHTTPStubs.framework */; };
+		12E337E31D6F56B400F3E5DE /* OHHTTPStubs.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 120EC7811D624DA7006B80A5 /* OHHTTPStubs.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		12E337E41D6F56BA00F3E5DE /* OHHTTPStubs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 120EC7811D624DA7006B80A5 /* OHHTTPStubs.framework */; };
+		12E337E51D6F56D700F3E5DE /* OHHTTPStubs.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 120EC7811D624DA7006B80A5 /* OHHTTPStubs.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7A1C62581D18773E00B721E9 /* Credentials.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7A34CB511C233E2100F20D0E /* Credentials.plist */; };
 		7A1F486B1D47AF7E00971377 /* ConversationV1.h in Headers */ = {isa = PBXBuildFile; fileRef = 7A1F486A1D47AF7E00971377 /* ConversationV1.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7A219F101D1350670003D934 /* ConversationV1Experimental.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7A219F061D1350670003D934 /* ConversationV1Experimental.framework */; };
@@ -501,6 +510,7 @@
 			files = (
 				123B472A1D1B3C41007D0B22 /* Alamofire.framework in CopyFiles */,
 				123B472B1D1B3C41007D0B22 /* Freddy.framework in CopyFiles */,
+				12E337E51D6F56D700F3E5DE /* OHHTTPStubs.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -545,6 +555,7 @@
 			files = (
 				7A987D781D19D9DA003626B2 /* Alamofire.framework in CopyFiles */,
 				7A987D791D19D9DA003626B2 /* Freddy.framework in CopyFiles */,
+				12E337E31D6F56B400F3E5DE /* OHHTTPStubs.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -635,6 +646,7 @@
 			files = (
 				7AAAF52F1CEEA21200B74848 /* Alamofire.framework in CopyFiles */,
 				7AAAF5301CEEA21200B74848 /* Freddy.framework in CopyFiles */,
+				12E337DF1D6CFE9400F3E5DE /* OHHTTPStubs.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -738,6 +750,9 @@
 		12DBA9361D512D9100966E41 /* ranker_train_data.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ranker_train_data.csv; sourceTree = "<group>"; };
 		12DBA9381D52405E00966E41 /* ranker_test_data.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ranker_test_data.csv; sourceTree = "<group>"; };
 		12DEF7BC1D3DD0F8009A7FA0 /* SearchAndRankResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchAndRankResponse.swift; sourceTree = "<group>"; };
+		12E337DA1D6CFCD000F3E5DE /* createDialog.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = createDialog.txt; sourceTree = "<group>"; };
+		12E337DC1D6CFCE800F3E5DE /* deleteDialog.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = deleteDialog.txt; sourceTree = "<group>"; };
+		12E337E01D6E27BE00F3E5DE /* deleteInvalidDialog.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = deleteInvalidDialog.txt; sourceTree = "<group>"; };
 		7A0F95B61C23288E004C01C0 /* WatsonDeveloperCloud.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WatsonDeveloperCloud.h; path = Source/SupportingFiles/WatsonDeveloperCloud.h; sourceTree = "<group>"; };
 		7A0F95B81C23288E004C01C0 /* Info-Release.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Info-Release.plist"; path = "Source/SupportingFiles/Info-Release.plist"; sourceTree = "<group>"; };
 		7A0F95C41C23288E004C01C0 /* Info-Tests.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Info-Tests.plist"; path = "Source/SupportingFiles/Info-Tests.plist"; sourceTree = "<group>"; };
@@ -983,6 +998,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12E337E21D6F568B00F3E5DE /* OHHTTPStubs.framework in Frameworks */,
 				123B471C1D1B3ABA007D0B22 /* RetrieveAndRankV1.framework in Frameworks */,
 				12740EFD1D40060200F7DCCE /* Freddy.framework in Frameworks */,
 			);
@@ -1057,6 +1073,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A987D551D19D887003626B2 /* RelationshipExtractionV1Beta.framework in Frameworks */,
+				12E337E41D6F56BA00F3E5DE /* OHHTTPStubs.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1202,6 +1219,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7AAAF5131CEEA1DA00B74848 /* DialogV1.framework in Frameworks */,
+				12E337DE1D6CFD1F00F3E5DE /* OHHTTPStubs.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1940,6 +1958,9 @@
 				7AEB13271CBF7C8A00101884 /* DialogTests.swift */,
 				7AEB13281CBF7C8A00101884 /* pizza_sample.xml */,
 				7A7150131CC6C88E00DFEBB0 /* pizza_sample_invalid.xml */,
+				12E337DA1D6CFCD000F3E5DE /* createDialog.txt */,
+				12E337DC1D6CFCE800F3E5DE /* deleteDialog.txt */,
+				12E337E01D6E27BE00F3E5DE /* deleteInvalidDialog.txt */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -3260,9 +3281,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				12E337DD1D6CFCE800F3E5DE /* deleteDialog.txt in Resources */,
 				7AAAF52A1CEEA1FD00B74848 /* Credentials.plist in Resources */,
 				7AAAF5291CEEA1EF00B74848 /* pizza_sample_invalid.xml in Resources */,
+				12E337DB1D6CFCD000F3E5DE /* createDialog.txt in Resources */,
 				7AAAF5281CEEA1EF00B74848 /* pizza_sample.xml in Resources */,
+				12E337E11D6E27BE00F3E5DE /* deleteInvalidDialog.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4304,6 +4328,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "Source/SupportingFiles/Info-Tests.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -4316,6 +4344,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "Source/SupportingFiles/Info-Tests.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -4867,6 +4899,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "Source/SupportingFiles/Info-Tests.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -4879,6 +4915,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Carthage/Build/iOS",
+				);
 				INFOPLIST_FILE = "Source/SupportingFiles/Info-Tests.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";

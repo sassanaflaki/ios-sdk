@@ -150,6 +150,20 @@ public class Dialog {
                 switch encodingResult {
                 case .Success(let upload, _, _):
                     upload.authenticate(user: self.username, password: self.password)
+//                    upload.responseData { response in
+//                        let file = "createDialog.txt"
+//                        let data = response.data
+//                        
+//                        if let dir = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.AllDomainsMask, true).first {
+//                            let path = NSURL(fileURLWithPath: dir).URLByAppendingPathComponent(file)
+//                            
+//                            //writing
+//                            do {
+//                                try data?.writeToURL(path, options: NSDataWritingOptions.DataWritingAtomic)
+//                            }
+//                            catch {/* error handling here */}
+//                        }
+//                    }
                     upload.responseObject(dataToError: self.dataToError, path: ["dialog_id"]) {
                         (response: Response<DialogID, NSError>) in
                         switch response.result {
@@ -194,6 +208,20 @@ public class Dialog {
         Alamofire.request(request)
             .authenticate(user: username, password: password)
             .responseData { response in
+                
+//                let file = "deleteInvalidDialog.txt"
+//                let result = response.data
+//                
+//                if let dir = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.AllDomainsMask, true).first {
+//                    let path = NSURL(fileURLWithPath: dir).URLByAppendingPathComponent(file)
+//                    
+//                    //writing
+//                    do {
+//                        try result?.writeToURL(path, options: NSDataWritingOptions.DataWritingAtomic)
+//                    }
+//                    catch {/* error handling here */}
+//                }
+                
                 switch response.result {
                 case .Success(let data):
                     switch self.dataToError(data) {

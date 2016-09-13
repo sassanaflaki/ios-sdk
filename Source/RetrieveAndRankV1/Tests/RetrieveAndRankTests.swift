@@ -16,6 +16,7 @@
 
 import XCTest
 import RetrieveAndRankV1
+import OHHTTPStubs
 
 class RetrieveAndRankTests: XCTestCase {
     
@@ -349,6 +350,18 @@ class RetrieveAndRankTests: XCTestCase {
     
     /** Get a specific configuration. */
     func testGetSolrConfiguration() {
+        
+        stub(isHost("gateway.watsonplatform.net")) { _ in
+            print("stubbing download configuration")
+//            return fixture(OHPathForFile("deleteDialog.txt", self.dynamicType)!, headers: [:])
+            
+            
+            
+//            let fileURL = self.loadFile("cranfield_solr_config", withExtension: "zip")!
+//            return OHHTTPStubsResponse(data: NSData(contentsOfURL: fileURL)!, statusCode: 200, headers: [:])
+            return fixture(OHPathForFile("cranfield_solr_config.zip", self.dynamicType)!, headers: [:])
+        }
+        
         let description = "Get the trained configuration in the trained Solr cluster."
         let expectation = expectationWithDescription(description)
         
