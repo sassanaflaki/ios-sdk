@@ -100,8 +100,7 @@ public class RelationshipExtraction {
         )
         
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseObject(dataToError: dataToError, path: ["doc"]) {
                 (response: Response<Document, NSError>) in
                 switch response.result {

@@ -105,13 +105,12 @@ public class AlchemyDataNews {
         )
         
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<NewsResponse, NSError>) in
-                switch response.result {
-                case .Success(let newsResponse): success(newsResponse)
-                case .Failure(let error): failure?(error)
-                }
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<NewsResponse, NSError>) in
+            switch response.result {
+            case .Success(let newsResponse): success(newsResponse)
+            case .Failure(let error): failure?(error)
+            }
         }
     }
     

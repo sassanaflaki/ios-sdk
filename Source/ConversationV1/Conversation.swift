@@ -148,8 +148,7 @@ public class Conversation {
         )
         
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseObject(dataToError: dataToError) {
                 (response: Response<MessageResponse, NSError>) in
                 switch response.result {

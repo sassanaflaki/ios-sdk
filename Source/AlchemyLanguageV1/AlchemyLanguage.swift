@@ -20,32 +20,32 @@ import Freddy
 import RestKit
 
 /**
- The AlchemyLanguage API utilizes sophisticated natural language processing techniques to provide 
+ The AlchemyLanguage API utilizes sophisticated natural language processing techniques to provide
  high-level semantic information about your content.
  */
 
 public class AlchemyLanguage {
-    
+
     /// The base URL to use when contacting the service.
     public var serviceUrl = "https://gateway-a.watsonplatform.net/calls"
-    
+
     private let apiKey: String
     private let errorDomain = "com.watsonplatform.alchemyLanguage"
     private let userAgent = buildUserAgent("watson-apis-ios-sdk/0.8.0 AlchemyLanguageV1")
- 
+
     private let unreservedCharacters = NSCharacterSet(charactersInString: "abcdefghijklmnopqrstuvwxyz" +
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
         "1234567890-._~")
-    
+
     /**
      Create an `AlchemyLanguage` object.
-     
+
      - parameter apiKey: The API key credential to use when authenticating with the service.
      */
     public init(apiKey: String) {
         self.apiKey = apiKey
     }
-    
+
     private func dataToError(data: NSData) -> NSError? {
         do {
             let json = try JSON(data: data)
@@ -60,7 +60,7 @@ public class AlchemyLanguage {
             return nil
         }
     }
-    
+
     private func buildBody(document: NSURL, html: Bool) throws -> NSData {
         guard let docAsString = try? String(contentsOfURL: document)
             .stringByAddingPercentEncodingWithAllowedCharacters(unreservedCharacters) else {
@@ -83,10 +83,10 @@ public class AlchemyLanguage {
         }
         return body
     }
-    
+
     /**
      Extracts the Author(s) of given content.
-     
+
      - parameter url:     the URL of the content
      - parameter failure: a function executed if the call fails
      - parameter success: a function executed with Author information
@@ -96,7 +96,7 @@ public class AlchemyLanguage {
         failure: (NSError -> Void)? = nil,
         success: DocumentAuthors -> Void)
     {
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -110,22 +110,21 @@ public class AlchemyLanguage {
                 NSURLQueryItem(name: "outputMode", value: "json")
             ]
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<DocumentAuthors, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<DocumentAuthors, NSError>) in
                 switch response.result {
                 case .Success(let authors): success(authors)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
-        
+
     }
-    
+
     /**
      Extracts the Author(s) of given content.
-     
+
      - parameter html:    an HTML document
      - parameter url:     a reference to where the HTML is located
      - parameter failure: a function executed if the call fails
@@ -139,16 +138,16 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(html, html: true)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let myUrl = url {
             queryParams.append(NSURLQueryItem(name: "url", value: myUrl))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -158,21 +157,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<DocumentAuthors, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<DocumentAuthors, NSError>) in
                 switch response.result {
                 case .Success(let authors): success(authors)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Calculates the Concepts of given content.
-     
+
      - parameter url:            the URL of the content
      - parameter knowledgeGraph: whether to include a knowledgeGraph calculation
      - parameter failure:        a function executed if the call fails
@@ -184,10 +182,10 @@ public class AlchemyLanguage {
         failure: (NSError -> Void)? = nil,
         success: ConceptResponse -> Void)
     {
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         queryParams.append(NSURLQueryItem(name: "linkedData", value: "1"))
@@ -196,7 +194,7 @@ public class AlchemyLanguage {
             queryParams.append(NSURLQueryItem(name: "knowledgeGraph",
                 value: String(myGraph.rawValue)))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -206,21 +204,20 @@ public class AlchemyLanguage {
             userAgent: userAgent,
             queryParameters: queryParams
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<ConceptResponse, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<ConceptResponse, NSError>) in
                 switch response.result {
                 case .Success(let concepts): success(concepts)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Calculates the concepts of given content.
-     
+
      - parameter html:           an HTML document
      - parameter url:            a reference to where the HTML is located
      - parameter knowledgeGraph: whether to include a knowledgeGraph calculation
@@ -236,10 +233,10 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(html, html: true)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         queryParams.append(NSURLQueryItem(name: "linkedData", value: "1"))
@@ -250,7 +247,7 @@ public class AlchemyLanguage {
             queryParams.append(NSURLQueryItem(name: "knowledgeGraph",
                 value: String(myGraph.rawValue)))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -260,22 +257,21 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<ConceptResponse, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<ConceptResponse, NSError>) in
                 switch response.result {
                 case .Success(let concepts): success(concepts)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
-        
+
     }
-    
+
     /**
      Calculates the concepts of given content.
-     
+
      - parameter text:           a Text document
      - parameter knowledgeGraph: whether to include a knowledgeGraph calculation
      - parameter failure:        a function executed if the call fails
@@ -289,10 +285,10 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(text, html: false)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         queryParams.append(NSURLQueryItem(name: "linkedData", value: "1"))
@@ -300,7 +296,7 @@ public class AlchemyLanguage {
             queryParams.append(NSURLQueryItem(name: "knowledgeGraph",
                 value: String(myGraph.rawValue)))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -310,21 +306,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<ConceptResponse, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<ConceptResponse, NSError>) in
                 switch response.result {
                 case .Success(let concepts): success(concepts)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Calculates the Entities of given content.
-     
+
      - parameter url:                  the URL of the content
      - parameter knowledgeGraph:       whether to include a knowledgeGraph calculation
      - parameter disambiguateEntities: whether to include disambiguate entities
@@ -350,7 +345,7 @@ public class AlchemyLanguage {
     {
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         queryParams.append(NSURLQueryItem(name: "url", value: url))
@@ -378,8 +373,8 @@ public class AlchemyLanguage {
             queryParams.append(NSURLQueryItem(name: "structuredEntities",
                 value: String(structEnts.rawValue)))
         }
-        
-        
+
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -388,21 +383,20 @@ public class AlchemyLanguage {
             userAgent: userAgent,
             queryParameters: queryParams
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<Entities, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<Entities, NSError>) in
                 switch response.result {
                 case .Success(let entities): success(entities)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Calculates the Entities of given content.
-     
+
      - parameter html:                 a HTML document
      - parameter url:                  a reference to where the HTML is located
      - parameter knowledgeGraph:       whether to include a knowledgeGraph calculation
@@ -430,10 +424,10 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(html, html: true)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let myUrl = url {
@@ -463,8 +457,8 @@ public class AlchemyLanguage {
             queryParams.append(NSURLQueryItem(name: "structuredEntities",
                 value: String(structEnts.rawValue)))
         }
-        
-        
+
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -474,21 +468,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<Entities, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<Entities, NSError>) in
                 switch response.result {
                 case .Success(let entities): success(entities)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Calculates the Entities of given content.
-     
+
      - parameter text:                 a Text document
      - parameter knowledgeGraph:       whether to include a knowledgeGraph calculation
      - parameter disambiguateEntities: whether to include disambiguate entities
@@ -514,10 +507,10 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(text, html: false)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let myGraph = knowledgeGraph {
@@ -544,8 +537,8 @@ public class AlchemyLanguage {
             queryParams.append(NSURLQueryItem(name: "structuredEntities",
                 value: String(structEnts.rawValue)))
         }
-        
-        
+
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -555,21 +548,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<Entities, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<Entities, NSError>) in
                 switch response.result {
                 case .Success(let entities): success(entities)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Keywords of given content.
-     
+
      - parameter url:            the URL of the content
      - parameter knowledgeGraph: whether to include a knowledgeGraph calculation
      - parameter strictMode:     whether to run in strict mode
@@ -587,7 +579,7 @@ public class AlchemyLanguage {
     {
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         queryParams.append(NSURLQueryItem(name: "url", value: url))
@@ -606,7 +598,7 @@ public class AlchemyLanguage {
             }
             queryParams.append(NSURLQueryItem(name: "keywordExtractMode", value: mode))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -615,21 +607,20 @@ public class AlchemyLanguage {
             userAgent: userAgent,
             queryParameters: queryParams
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<Keywords, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<Keywords, NSError>) in
                 switch response.result {
                 case .Success(let keywords): success(keywords)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Keywords of given content.
-     
+
      - parameter html:           a HTML document
      - parameter url:            a reference to where the HTML is located
      - parameter knowledgeGraph: whether to include a knowledgeGraph calculation
@@ -649,10 +640,10 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(html, html: true)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let myUrl = url {
@@ -673,7 +664,7 @@ public class AlchemyLanguage {
             }
             queryParams.append(NSURLQueryItem(name: "keywordExtractMode", value: mode))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -683,21 +674,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<Keywords, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<Keywords, NSError>) in
                 switch response.result {
                 case .Success(let keywords): success(keywords)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Keywords of given content.
-     
+
      - parameter text:           a Text document
      - parameter knowledgeGraph: whether to include a knowledgeGraph calculation
      - parameter strictMode:     whether to run in strict mode
@@ -715,10 +705,10 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(text, html: false)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let graph = knowledgeGraph {
@@ -736,7 +726,7 @@ public class AlchemyLanguage {
             }
             queryParams.append(NSURLQueryItem(name: "keywordExtractMode", value: mode))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -746,21 +736,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<Keywords, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<Keywords, NSError>) in
                 switch response.result {
                 case .Success(let keywords): success(keywords)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the language of given content.
-     
+
      - parameter url:     the URL of the content
      - parameter failure: a function executed if the call fails
      - parameter success: a function executed with Language information
@@ -783,21 +772,20 @@ public class AlchemyLanguage {
                 NSURLQueryItem(name: "outputMode", value: "json")
             ]
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<Language, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<Language, NSError>) in
                 switch response.result {
                 case .Success(let language): success(language)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the language of given content.
-     
+
      - parameter text:    a Text document
      - parameter failure: a function executed if the call fails
      - parameter success: a function executed with Language information
@@ -809,13 +797,13 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(text, html: false)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -825,21 +813,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<Language, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<Language, NSError>) in
                 switch response.result {
                 case .Success(let language): success(language)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Microformat Data of given content.
-     
+
      - parameter url:     the URL of the content
      - parameter failure: a function executed if the call fails
      - parameter success: a function executed with Microformat information
@@ -862,22 +849,21 @@ public class AlchemyLanguage {
                 NSURLQueryItem(name: "outputMode", value: "json")
             ]
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<Microformats, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<Microformats, NSError>) in
                 switch response.result {
                 case .Success(let microformats): success(microformats)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Microformat Data of given content.
      The fact URL is required here is a bug.
-     
+
      - parameter html:    a HTML document
      - parameter url:     a reference to where the HTML is located
      - parameter failure: a function executed if the call fails
@@ -891,16 +877,16 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(html, html: true)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let myUrl = url {
             queryParams.append(NSURLQueryItem(name: "url", value: myUrl))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -910,21 +896,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<Microformats, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<Microformats, NSError>) in
                 switch response.result {
                 case .Success(let microformats): success(microformats)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Publication Date of given content.
-     
+
      - parameter url:     the URL of the content
      - parameter failure: a function executed if the call fails
      - parameter success: a function executed with Publication information
@@ -947,21 +932,20 @@ public class AlchemyLanguage {
                 NSURLQueryItem(name: "outputMode", value: "json")
             ]
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<PublicationResponse, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<PublicationResponse, NSError>) in
                 switch response.result {
                 case .Success(let pubResponse): success(pubResponse)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Publication Date of given content.
-     
+
      - parameter html:    a HTML document
      - parameter url:     a reference to where the HTML is located
      - parameter failure: a function executed if the call fails
@@ -975,16 +959,16 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(html, html: true)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let myUrl = url {
             queryParams.append(NSURLQueryItem(name: "url", value: myUrl))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -994,21 +978,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<PublicationResponse, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<PublicationResponse, NSError>) in
                 switch response.result {
                 case .Success(let pubResponse): success(pubResponse)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Subject-Action-Object relations of given content.
-     
+
      - parameter url:                      the URL of the content
      - parameter disambiguateEntities:     whether to include disambiguate entities
      - parameter linkedData:               whether to include linked data
@@ -1038,7 +1021,7 @@ public class AlchemyLanguage {
     {
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         queryParams.append(NSURLQueryItem(name: "url", value: url))
@@ -1071,7 +1054,7 @@ public class AlchemyLanguage {
             queryParams.append(NSURLQueryItem(name: "sentimentExcludeEntities",
                 value: String(sentiExEnts.rawValue)))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -1080,21 +1063,20 @@ public class AlchemyLanguage {
             userAgent: userAgent,
             queryParameters: queryParams
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<SAORelations, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<SAORelations, NSError>) in
                 switch response.result {
                 case .Success(let relations): success(relations)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Subject-Action-Object relations of given content.
-     
+
      - parameter html:                     a HTML document
      - parameter url:                      a reference to where the HTML is located
      - parameter disambiguateEntities:     whether to include disambiguate entities
@@ -1126,10 +1108,10 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(html, html: true)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let myUrl = url {
@@ -1164,7 +1146,7 @@ public class AlchemyLanguage {
             queryParams.append(NSURLQueryItem(name: "sentimentExcludeEntities",
                 value: String(sentiExEnts.rawValue)))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -1174,21 +1156,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<SAORelations, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<SAORelations, NSError>) in
                 switch response.result {
                 case .Success(let relations): success(relations)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Subject-Action-Object relations of given content.
-     
+
      - parameter text:                     a Text document
      - parameter disambiguateEntities:     whether to include disambiguate entities
      - parameter linkedData:               whether to include linked data
@@ -1218,10 +1199,10 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(text, html: false)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let graph = knowledgeGraph {
@@ -1253,7 +1234,7 @@ public class AlchemyLanguage {
             queryParams.append(NSURLQueryItem(name: "sentimentExcludeEntities",
                 value: String(sentiExEnts.rawValue)))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -1263,21 +1244,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<SAORelations, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<SAORelations, NSError>) in
                 switch response.result {
                 case .Success(let relations): success(relations)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
 
     /**
      Calculates the Sentiment of given content.
-     
+
      - parameter url:     the URL of the content
      - parameter failure: a function executed if the call fails
      - parameter success: a function executed with Sentiment information
@@ -1300,21 +1280,20 @@ public class AlchemyLanguage {
                 NSURLQueryItem(name: "outputMode", value: "json")
             ]
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<SentimentResponse, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<SentimentResponse, NSError>) in
                 switch response.result {
                 case .Success(let sentimentResponse): success(sentimentResponse)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Calculates the Sentiment of given content.
-     
+
      - parameter html:    a HTML document
      - parameter url:     a reference to where the HTML is located
      - parameter failure: a function executed if the call fails
@@ -1328,16 +1307,16 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(html, html: true)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let myUrl = url {
             queryParams.append(NSURLQueryItem(name: "url", value: myUrl))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -1347,21 +1326,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<SentimentResponse, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<SentimentResponse, NSError>) in
                 switch response.result {
                 case .Success(let sentimentResponse): success(sentimentResponse)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Calculates the Sentiment of given content.
-     
+
      - parameter text:    a Text document
      - parameter failure: a function executed if the call fails
      - parameter success: a function executed with Sentiment information
@@ -1373,13 +1351,13 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(text, html: false)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -1389,21 +1367,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<SentimentResponse, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<SentimentResponse, NSError>) in
                 switch response.result {
                 case .Success(let sentimentResponse): success(sentimentResponse)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Calculates the Sentiment of given content.
-     
+
      - parameter target:  a pharse to target analysis towards
      - parameter url:     the URL of the content
      - parameter failure: a function executed if the call fails
@@ -1428,21 +1405,20 @@ public class AlchemyLanguage {
                 NSURLQueryItem(name: "outputMode", value: "json")
             ]
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<SentimentResponse, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<SentimentResponse, NSError>) in
                 switch response.result {
                 case .Success(let sentimentResponse): success(sentimentResponse)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Calculates the Sentiment of given content.
-     
+
      - parameter html:    a HTML document
      - parameter target:  a pharse to target analysis towards
      - parameter url:     a reference to where the HTML is located
@@ -1458,17 +1434,17 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(html, html: true)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         queryParams.append(NSURLQueryItem(name: "target", value: target))
         if let myUrl = url {
             queryParams.append(NSURLQueryItem(name: "url", value: myUrl))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -1478,21 +1454,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<SentimentResponse, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<SentimentResponse, NSError>) in
                 switch response.result {
                 case .Success(let sentimentResponse): success(sentimentResponse)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Calculates the Sentiment of given content.
-     
+
      - parameter text:    a Text document
      - parameter target:  a pharse to target analysis towards
      - parameter failure: a function executed if the call fails
@@ -1506,14 +1481,14 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(text, html: false)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         queryParams.append(NSURLQueryItem(name: "target", value: target))
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -1523,21 +1498,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<SentimentResponse, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<SentimentResponse, NSError>) in
                 switch response.result {
                 case .Success(let sentimentResponse): success(sentimentResponse)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Calculates the Taxonomy of given content.
-     
+
      - parameter url:     the URL of the content
      - parameter failure: a function executed if the call fails
      - parameter success: a function executed with Taxonomy information
@@ -1559,21 +1533,20 @@ public class AlchemyLanguage {
                 NSURLQueryItem(name: "outputMode", value: "json")
             ]
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<Taxonomies, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<Taxonomies, NSError>) in
                 switch response.result {
                 case .Success(let taxonomies): success(taxonomies)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Calculates the Taxonomy of given content.
-     
+
      - parameter html:    a HTML document
      - parameter url:     a reference to where the HTML is located
      - parameter failure: a function executed if the call fails
@@ -1587,16 +1560,16 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(html, html: true)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let myUrl = url {
             queryParams.append(NSURLQueryItem(name: "url", value: myUrl))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -1606,21 +1579,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<Taxonomies, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<Taxonomies, NSError>) in
                 switch response.result {
                 case .Success(let taxonomies): success(taxonomies)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Calculates the Taxonomy of given content.
-     
+
      - parameter text:    a Text document
      - parameter failure: a function executed if the call fails
      - parameter success: a function executed with Taxonomy information
@@ -1632,13 +1604,13 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(text, html: false)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -1648,21 +1620,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<Taxonomies, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<Taxonomies, NSError>) in
                 switch response.result {
                 case .Success(let taxonomies): success(taxonomies)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Raw Text of given content.
-     
+
      - parameter url:     the URL of the content
      - parameter failure: a function executed if the call fails
      - parameter success: a function executed with Raw Text information
@@ -1684,21 +1655,20 @@ public class AlchemyLanguage {
                 NSURLQueryItem(name: "outputMode", value: "json")
             ]
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<DocumentText, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<DocumentText, NSError>) in
                 switch response.result {
                 case .Success(let docText): success(docText)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Raw Text of given content.
-     
+
      - parameter html:    a HTML document
      - parameter url:     a reference to where the HTML is located
      - parameter failure: a function executed if the call fails
@@ -1712,16 +1682,16 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(html, html: true)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let myUrl = url {
             queryParams.append(NSURLQueryItem(name: "url", value: myUrl))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -1731,21 +1701,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<DocumentText, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<DocumentText, NSError>) in
                 switch response.result {
                 case .Success(let docText): success(docText)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Text of given content.
-     
+
      - parameter url:          the URL of the content
      - parameter useMetadata:  whether to use metadata embeded in the webpage
      - parameter extractLinks: whether to include hyperlinks in the extracted text
@@ -1761,7 +1730,7 @@ public class AlchemyLanguage {
     {
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         queryParams.append(NSURLQueryItem(name: "url", value: url))
@@ -1771,7 +1740,7 @@ public class AlchemyLanguage {
         if let extract = extractLinks {
             queryParams.append(NSURLQueryItem(name: "extractLinks", value: String(extract.rawValue)))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -1780,21 +1749,20 @@ public class AlchemyLanguage {
             userAgent: userAgent,
             queryParameters: queryParams
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<DocumentText, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<DocumentText, NSError>) in
                 switch response.result {
                 case .Success(let docText): success(docText)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Text of given content.
-     
+
      - parameter html:         a HTML document
      - parameter url:          a reference to where the HTML is located
      - parameter useMetadata:  whether to use metadata embeded in the webpage
@@ -1812,10 +1780,10 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(html, html: true)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let myUrl = url {
@@ -1827,7 +1795,7 @@ public class AlchemyLanguage {
         if let extract = extractLinks {
             queryParams.append(NSURLQueryItem(name: "extractLinks", value: String(extract.rawValue)))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -1837,21 +1805,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<DocumentText, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<DocumentText, NSError>) in
                 switch response.result {
                 case .Success(let docText): success(docText)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Title of given content.
-     
+
      - parameter url:          the URL of the content
      - parameter failure:      a function executed if the call fails
      - parameter success:      a function executed with Title information
@@ -1864,14 +1831,14 @@ public class AlchemyLanguage {
     {
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         queryParams.append(NSURLQueryItem(name: "url", value: url))
         if let metadata = useMetadata {
             queryParams.append(NSURLQueryItem(name: "useMetadata", value: String(metadata.rawValue)))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -1880,21 +1847,20 @@ public class AlchemyLanguage {
             userAgent: userAgent,
             queryParameters: queryParams
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<DocumentTitle, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<DocumentTitle, NSError>) in
                 switch response.result {
                 case .Success(let docTitle): success(docTitle)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Title of given content.
-     
+
      - parameter html:    a HTML document
      - parameter url:     a reference to where the HTML is located
      - parameter failure: a function executed if the call fails
@@ -1909,10 +1875,10 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(html, html: true)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let myUrl = url {
@@ -1921,7 +1887,7 @@ public class AlchemyLanguage {
         if let metadata = useMetadata {
             queryParams.append(NSURLQueryItem(name: "useMetadata", value: String(metadata.rawValue)))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -1931,21 +1897,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<DocumentTitle, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<DocumentTitle, NSError>) in
                 switch response.result {
                 case .Success(let docTitle): success(docTitle)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Feeds of given content.
-     
+
      - parameter url:          the URL of the content
      - parameter failure:      a function executed if the call fails
      - parameter success:      a function executed with Feed information
@@ -1967,22 +1932,21 @@ public class AlchemyLanguage {
                 NSURLQueryItem(name: "outputMode", value: "json")
             ]
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<Feeds, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<Feeds, NSError>) in
                 switch response.result {
                 case .Success(let feeds): success(feeds)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Feeds of given content.
      The fact that URL is required here is a bug.
-     
+
      - parameter html:    a HTML document
      - parameter url:     a reference to where the HTML is located
      - parameter failure: a function executed if the call fails
@@ -1996,16 +1960,16 @@ public class AlchemyLanguage {
     {
         // construct body
         let body = try? buildBody(html, html: true)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let myUrl = url {
             queryParams.append(NSURLQueryItem(name: "url", value: myUrl))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -2015,21 +1979,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<Feeds, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<Feeds, NSError>) in
                 switch response.result {
                 case .Success(let feeds): success(feeds)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
- 
+
     /**
      Extracts the Emotion of given content.
-     
+
      - parameter url:          the URL of the content
      - parameter failure:      a function executed if the call fails
      - parameter success:      a function executed with Feed information
@@ -2051,21 +2014,20 @@ public class AlchemyLanguage {
                 NSURLQueryItem(name: "outputMode", value: "json")
             ]
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<DocumentEmotion, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<DocumentEmotion, NSError>) in
                 switch response.result {
                 case .Success(let emotion): success(emotion)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Emotion of given content.
-     
+
      - parameter html:    a HTML document
      - parameter url:     a reference to where the HTML is located
      - parameter failure: a function executed if the call fails
@@ -2077,19 +2039,19 @@ public class AlchemyLanguage {
         failure: (NSError -> Void)? = nil,
         success: DocumentEmotion -> Void)
     {
-        
+
         // construct body
         let body = try? buildBody(html, html: true)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
         if let myUrl = url {
             queryParams.append(NSURLQueryItem(name: "url", value: myUrl))
         }
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -2099,21 +2061,20 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<DocumentEmotion, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<DocumentEmotion, NSError>) in
                 switch response.result {
                 case .Success(let emotion): success(emotion)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
-    
+
     /**
      Extracts the Emotion of given content.
-     
+
      - parameter text:    a Text document
      - parameter failure: a function executed if the call fails
      - parameter success: a function executed with Feed information
@@ -2123,16 +2084,16 @@ public class AlchemyLanguage {
         failure: (NSError -> Void)? = nil,
         success: DocumentEmotion -> Void)
     {
-        
+
         // construct body
         let body = try? buildBody(text, html: false)
-        
+
         // construct query paramerters
         var queryParams = [NSURLQueryItem]()
-        
+
         queryParams.append(NSURLQueryItem(name: "apikey", value: apiKey))
         queryParams.append(NSURLQueryItem(name: "outputMode", value: "json"))
-        
+
         // construct request
         let request = RestRequest(
             method: .POST,
@@ -2142,15 +2103,14 @@ public class AlchemyLanguage {
             queryParameters: queryParams,
             messageBody: body
         )
-        
+
         // execute request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<DocumentEmotion, NSError>) in
+        request.responseObject(dataToError: dataToError) {
+            (response: Response<DocumentEmotion, NSError>) in
                 switch response.result {
                 case .Success(let emotion): success(emotion)
                 case .Failure(let error): failure?(error)
-                }
+            }
         }
     }
 

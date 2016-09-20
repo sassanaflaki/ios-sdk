@@ -29,10 +29,10 @@ public typealias DialogID = String
  */
 @available(*, deprecated, message="The IBM Watson™ Dialog service will be deprecated on August 15, 2016. The service will be retired on September 8, 2016, after which no new instances of the service can be created, though existing instances of the service will continue to function until August 9, 2017. Users of the Dialog service should migrate their applications to use the IBM Watson™ Conversation service. See the migration documentation to learn how to migrate your dialogs to the Conversation service.")
 public class Dialog {
-    
+
     /// The base URL to use when contacting the service.
     public var serviceURL = "https://gateway.watsonplatform.net/dialog/api"
-    
+
     private let username: String
     private let password: String
     private let userAgent = buildUserAgent("watson-apis-ios-sdk/0.8.0 DialogV1")
@@ -45,7 +45,7 @@ public class Dialog {
 
     /**
      Create a `Dialog` object.
-     
+
      - parameter username: The username used to authenticate with the service.
      - parameter password: The password used to authenticate with the service.
      */
@@ -57,7 +57,7 @@ public class Dialog {
     /**
      If the given data represents an error returned by the Visual Recognition service, then return
      an NSError with information about the error that occured. Otherwise, return nil.
-     
+
      - parameter data: Raw data returned from the service that may represent an error.
      */
     private func dataToError(data: NSData) -> NSError? {
@@ -76,7 +76,7 @@ public class Dialog {
 
     /**
      List the dialog applications associated with this service instance.
-     
+
      - parameter failure: A function executed if an error occurs.
      - parameter success: A function executed with the list of dialog applications.
      */
@@ -93,8 +93,7 @@ public class Dialog {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseArray(dataToError: dataToError, path: ["dialogs"]) {
                 (response: Response<[DialogModel], NSError>) in
                 switch response.result {
@@ -137,8 +136,7 @@ public class Dialog {
         )
 
         // execute REST request
-        Alamofire.upload(request,
-            multipartFormData: { multipartFormData in
+        request.upload({ multipartFormData in
                 let nameData = name.dataUsingEncoding(NSUTF8StringEncoding)!
                 multipartFormData.appendBodyPart(data: nameData, name: "name")
                 multipartFormData.appendBodyPart(fileURL: fileURL, name: "file")
@@ -168,7 +166,7 @@ public class Dialog {
     /**
      Delete a dialog application associated with this service instance. This
      permanently removes all associated data.
-    
+
      - parameter dialogID: The dialog application identifier.
      - parameter failure: A function executed if an error occurs.
      - parameter success: A function executed after the dialog application
@@ -188,8 +186,7 @@ public class Dialog {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseData { response in
                 switch response.result {
                 case .Success(let data):
@@ -205,7 +202,7 @@ public class Dialog {
 
     /**
      Download the dialog file associated with the given dialog application.
-     
+
      - parameter dialogID: The dialog application identifier.
      - parameter format: The desired format of the dialog file. The format can be either
         OctetStream (.mct file), Watson dialog document JSON format (.json file), or Watson
@@ -226,7 +223,7 @@ public class Dialog {
             acceptType: format?.rawValue,
             userAgent: userAgent
         )
-        
+
         // determine file extension
         var filetype = ".mct"
         if let format = format {
@@ -236,7 +233,7 @@ public class Dialog {
             case .WDSXML: filetype = ".xml"
             }
         }
-        
+
         // locate downloads directory
         let fileManager = NSFileManager.defaultManager()
         let directories = fileManager.URLsForDirectory(.DownloadsDirectory, inDomains: .UserDomainMask)
@@ -247,13 +244,13 @@ public class Dialog {
             failure?(error)
             return
         }
-        
+
         // construct unique filename
         var filename = "dialog-" + dialogID + filetype
         var isUnique = false
         var duplicates = 0
         while !isUnique {
-            let filePath = downloads.URLByAppendingPathComponent(filename)!.path!
+            let filePath = downloads.URLByAppendingPathComponent(filename).path!
             if fileManager.fileExistsAtPath(filePath) {
                 duplicates += 1
                 filename = "dialog-" + dialogID + "-\(duplicates)" + filetype
@@ -261,22 +258,22 @@ public class Dialog {
                 isUnique = true
             }
         }
-        
+
         // specify download destination
-        let destinationURL = downloads.URLByAppendingPathComponent(filename)!
+        let destinationURL = downloads.URLByAppendingPathComponent(filename)
         let destination: Request.DownloadFileDestination = { temporaryURL, response -> NSURL in
             return destinationURL
         }
 
         // execute REST request
-        Alamofire.download(request, destination: destination)
+        request.download(destination)
             .authenticate(user: username, password: password)
             .response { _, response, data, error in
                 guard error == nil else {
                     failure?(error!)
                     return
                 }
-                
+
                 guard let response = response else {
                     let failureReason = "Did not receive response."
                     let userInfo = [NSLocalizedFailureReasonErrorKey: failureReason]
@@ -284,14 +281,14 @@ public class Dialog {
                     failure?(error)
                     return
                 }
-                
+
                 if let data = data {
                     if let error = self.dataToError(data) {
                         failure?(error)
                         return
                     }
                 }
-                
+
                 let statusCode = response.statusCode
                 if statusCode != 200 {
                     let failureReason = "Status code was not acceptable: \(statusCode)."
@@ -300,7 +297,7 @@ public class Dialog {
                     failure?(error)
                     return
                 }
-                
+
                 success(destinationURL)
             }
     }
@@ -319,7 +316,7 @@ public class Dialog {
         encrypted Dialog account file, .json for Watson Dialog document JSON format,
         or .xml for Watson Dialog document XML format.
      - parameter failure: A function executed if an error occurs.
-     - parameter success: A function executed after the dialog file has been 
+     - parameter success: A function executed after the dialog file has been
         successfully uploaded.
      */
     public func updateDialog(
@@ -336,9 +333,8 @@ public class Dialog {
         )
 
         // execute REST request
-        Alamofire.upload(
-            request,
-            multipartFormData: { multipartFormData in
+        request.upload(
+            { multipartFormData in
                 multipartFormData.appendBodyPart(fileURL: fileURL, name: "file")
             },
             encodingCompletion: { encodingResult in
@@ -391,8 +387,7 @@ public class Dialog {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseArray(dataToError: dataToError, path: ["items"]) {
                 (response: Response<[Node], NSError>) in
                 switch response.result {
@@ -436,8 +431,7 @@ public class Dialog {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseData { response in
                 switch response.result {
                 case .Success(let data):
@@ -452,10 +446,10 @@ public class Dialog {
     }
 
     // MARK: -  Conversation Operations
-    
+
     /**
      Retrieve conversation session history for a specified date range.
-     
+
      - parameter dialogID: The dialog application identifier.
      - parameter dateFrom: The start date of the desired conversation history. The
         timezone should match that of the Dialog application.
@@ -500,8 +494,7 @@ public class Dialog {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseArray(dataToError: dataToError, path: ["conversations"]) {
                 (response: Response<[Conversation], NSError>) in
                 switch response.result {
@@ -513,7 +506,7 @@ public class Dialog {
 
     /**
      Start a new conversation or obtain a response for a submitted input message.
-    
+
      - parameter dialogID: The dialog application identifier.
      - parameter conversationID: The conversation identifier. If not specified, then a
         new conversation will be started.
@@ -554,8 +547,7 @@ public class Dialog {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseObject(dataToError: dataToError) {
                 (response: Response<ConversationResponse, NSError>) in
                 switch response.result {
@@ -569,7 +561,7 @@ public class Dialog {
 
     /**
      Retrieve the values for a client's profile variables.
-    
+
      - parameter dialogID: The dialog application identifier.
      - parameter clientID: A client identifier that was generated by the dialog service.
      - parameter names: The names of the profile variables to retrieve. If nil, then all
@@ -603,8 +595,7 @@ public class Dialog {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseObject(dataToError: dataToError) {
                 (response: Response<Profile, NSError>) in
                 switch response.result {
@@ -616,7 +607,7 @@ public class Dialog {
 
     /**
      Set the values for a client's profile variables.
-    
+
      - parameter dialogID: The dialog application identifier.
      - parameter clientID: A client identifier that was generated by the dialog service.
         If not specified, then a new client identifier will be issued.
@@ -653,8 +644,7 @@ public class Dialog {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseData { response in
                 switch response.result {
                 case .Success(let data):

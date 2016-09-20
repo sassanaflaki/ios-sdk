@@ -28,7 +28,7 @@ public class LanguageTranslator {
 
     /// The base URL to use when contacting the service.
     public var serviceURL = "https://gateway.watsonplatform.net/language-translation/api"
-    
+
     private let username: String
     private let password: String
     private let userAgent = buildUserAgent("watson-apis-ios-sdk/0.8.0 LanguageTranslatorV2")
@@ -36,7 +36,7 @@ public class LanguageTranslator {
 
     /**
      Create a `LanguageTranslator` object.
-     
+
      - parameter username: The username used to authenticate with the service.
      - parameter password: The password used to authenticate with the service.
      */
@@ -48,7 +48,7 @@ public class LanguageTranslator {
     /**
      If the given data represents an error returned by the Visual Recognition service, then return
      an NSError with information about the error that occured. Otherwise, return nil.
-     
+
      - parameter data: Raw data returned from the service that may represent an error.
      */
     private func dataToError(data: NSData) -> NSError? {
@@ -67,7 +67,7 @@ public class LanguageTranslator {
 
     /**
      List the available standard and custom models.
-     
+
      - parameter source: Specify a source to filter models by source language.
      - parameter target: Specify a target to filter models by target language.
      - parameter defaultModelsOnly: Specify `true` to filter models by whether they are default.
@@ -106,8 +106,7 @@ public class LanguageTranslator {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseArray(dataToError: dataToError, path: ["models"]) {
                 (response: Response<[TranslationModel], NSError>) in
                 switch response.result {
@@ -119,11 +118,11 @@ public class LanguageTranslator {
 
     /**
      Create a custom language translator model by uploading a TMX glossary file.
-     
+
      Depending on the size of the file, training can range from minutes for a glossary to several
      hours for a large parallel corpus. Glossary files must be less than 10 MB. The cumulative file
      size of all uploaded glossary and corpus files is limited to 250 MB.
-     
+
      - parameter baseModelID: Specifies the domain model that is used as the base for the training.
      - parameter name: The model name. Valid characters are letters, numbers, -, and _. No spaces.
      - parameter forcedGlossary: A TMX file with your customizations. Anything that is specified in
@@ -157,8 +156,7 @@ public class LanguageTranslator {
         )
 
         // execute REST request
-        Alamofire.upload(request,
-            multipartFormData: { multipartFormData in
+        request.upload({ multipartFormData in
                 multipartFormData.appendBodyPart(fileURL: forcedGlossary, name: "forced_glossary")
             },
             encodingCompletion: { encodingResult in
@@ -185,7 +183,7 @@ public class LanguageTranslator {
 
     /**
      Delete a trained translation model.
-     
+
      - parameter modelID: The translation model's identifier.
      - parameter failure: A function executed if an error occurs.
      - parameter success: A function executed after the given model has been deleted.
@@ -204,8 +202,7 @@ public class LanguageTranslator {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseData { response in
                 switch response.result {
                 case .Success(let data):
@@ -221,7 +218,7 @@ public class LanguageTranslator {
 
     /**
      Get information about the given translation model, including training status.
-     
+
      - parameter modelID: The translation model's identifier.
      - parameter failure: A function executed if an error occurs.
      - parameter success: A function executed with the retrieved information about the model.
@@ -240,8 +237,7 @@ public class LanguageTranslator {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseObject(dataToError: dataToError) {
                 (response: Response<MonitorTraining, NSError>) in
                 switch response.result {
@@ -255,7 +251,7 @@ public class LanguageTranslator {
 
     /**
      Translate text from a source language to a target language.
-     
+
      - parameter text: The text to translate.
      - parameter modelID: The unique modelID of the translation model that shall be used to
             translate the text. The modelID inherently specifies the source, target language, and
@@ -275,7 +271,7 @@ public class LanguageTranslator {
 
     /**
      Translate text from a source language to a target language.
-     
+
      - parameter text: The text to translate.
      - parameter modelID: The unique modelID of the translation model that shall be used to
             translate the text. The modelID inherently specifies the source, target language, and
@@ -292,10 +288,10 @@ public class LanguageTranslator {
         let translateRequest = TranslateRequest(text: text, modelID: modelID)
         translate(translateRequest, failure: failure, success: success)
     }
-    
+
     /**
      Translate text from a source language to a target language.
-     
+
      - parameter text: The text to translate.
      - parameter source:  The source language in 2 or 5 letter language code. Use 2 letter codes
             except when clarifying between multiple supported languages.
@@ -317,7 +313,7 @@ public class LanguageTranslator {
 
     /**
      Translate text from a source language to a target language.
-     
+
      - parameter text: The text to translate.
      - parameter source:  The source language in 2 or 5 letter language code. Use 2 letter codes
             except when clarifying between multiple supported languages.
@@ -339,7 +335,7 @@ public class LanguageTranslator {
 
     /**
      Process a translation request.
- 
+
      - parameter translateRequest: A `TranslateRequest` object representing the parameters of the
             request to the Language Translator service.
      - parameter failure: A function executed if an error occurs.
@@ -370,8 +366,7 @@ public class LanguageTranslator {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseObject(dataToError: dataToError) {
                 (response: Response<TranslateResponse, NSError>) in
                 switch response.result {
@@ -385,7 +380,7 @@ public class LanguageTranslator {
 
     /**
      Get a list of all languages that can be identified.
-     
+
      - parameter failure: A function executed if an error occurs.
      - parameter success: A function executed with the list of all languages that can be identified.
      */
@@ -402,8 +397,7 @@ public class LanguageTranslator {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseArray(dataToError: dataToError, path: ["languages"]) {
                 (response: Response<[IdentifiableLanguage], NSError>) in
                 switch response.result {
@@ -415,7 +409,7 @@ public class LanguageTranslator {
 
     /**
      Identify the language of the given text.
-     
+
      - parameter text: The text whose language shall be identified.
      - parameter failure: A function executed if an error occurs.
      - parameter success: A function executed with all identified languages in the given text.
@@ -445,8 +439,7 @@ public class LanguageTranslator {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseArray(dataToError: dataToError, path: ["languages"]) {
                 (response: Response<[IdentifiedLanguage], NSError>) in
                 switch response.result {

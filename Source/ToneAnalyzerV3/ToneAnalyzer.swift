@@ -25,10 +25,10 @@ import RestKit
  to help the writer improve their intended language tones.
 **/
 public class ToneAnalyzer {
-    
+
     /// The base URL to use when contacting the service.
     public var serviceURL = "https://gateway.watsonplatform.net/tone-analyzer/api"
-    
+
     private let username: String
     private let password: String
     private let version: String
@@ -37,7 +37,7 @@ public class ToneAnalyzer {
 
     /**
      Create a `ToneAnalyzer` object.
- 
+
      - parameter username: The username used to authenticate with the service.
      - parameter password: The password used to authenticate with the service.
      - parameter version: The release date of the version of the API to use. Specify the date
@@ -48,11 +48,11 @@ public class ToneAnalyzer {
         self.password = password
         self.version = version
     }
-    
+
     /**
      If the given data represents an error returned by the Visual Recognition service, then return
      an NSError with information about the error that occured. Otherwise, return nil.
-     
+
      - parameter data: Raw data returned from the service that may represent an error.
      */
     private func dataToError(data: NSData) -> NSError? {
@@ -73,10 +73,10 @@ public class ToneAnalyzer {
 
     /**
      Analyze the tone of the given text.
-     
+
      The message is analyzed for several tones—social, emotional, and writing. For each tone,
      various traits are derived (e.g. conscientiousness, agreeableness, and openness).
-     
+
      - parameter text: The text to analyze.
      - parameter tones: Filter the results by a specific tone. Valid values for `tones` are
             `emotion`, `writing`, or `social`.
@@ -99,7 +99,7 @@ public class ToneAnalyzer {
             failure?(error)
             return
         }
-        
+
         // construct query parameters
         var queryParameters = [NSURLQueryItem]()
         queryParameters.append(NSURLQueryItem(name: "version", value: version))
@@ -110,7 +110,7 @@ public class ToneAnalyzer {
         if let sentences = sentences {
             queryParameters.append(NSURLQueryItem(name: "sentences", value: "\(sentences)"))
         }
-        
+
         // construct REST request
         let request = RestRequest(
             method: .POST,
@@ -121,10 +121,9 @@ public class ToneAnalyzer {
             queryParameters: queryParameters,
             messageBody: body
         )
-        
+
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseObject(dataToError: dataToError) {
                 (response: Response<ToneAnalysis, NSError>) in
                 switch response.result {

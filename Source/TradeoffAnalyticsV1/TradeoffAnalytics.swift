@@ -26,10 +26,10 @@ import RestKit
  service can help users explore the trade-offs between options to make complex decisions.
  */
 public class TradeoffAnalytics {
-    
+
     /// The base URL to use when contacting the service.
     public var serviceURL = "https://gateway.watsonplatform.net/tradeoff-analytics/api"
-    
+
     private let username: String
     private let password: String
     private let userAgent = buildUserAgent("watson-apis-ios-sdk/0.8.0 TradeoffAnalyticsV1")
@@ -37,7 +37,7 @@ public class TradeoffAnalytics {
 
     /**
      Create a `TradeoffAnalytics` object.
- 
+
      - parameter username: The username used to authenticate with the service.
      - parameter password: The password used to authenticate with the service.
      */
@@ -48,11 +48,11 @@ public class TradeoffAnalytics {
 
     /**
      Get a dilemma that contains a problem and its resolution.
-     
+
      The problem contains a set of columns (objectives) and options. The resolution contains a set
      of optimal options, their analytical characteristics, and, by default, their representation
      in a two-dimensional space.
-     
+
      - parameter problem: The decision problem.
      - parameter generateVisualization: Indicated whether to calculate the map visualization for
         the results. If `true`, the visualization is returned; if `false`, no visualization is
@@ -74,13 +74,13 @@ public class TradeoffAnalytics {
             failure?(error)
             return
         }
-        
+
         // construct query parameters
         var queryParameters = [NSURLQueryItem]()
         if let generateVisualization = generateVisualization {
             queryParameters.append(NSURLQueryItem(name: "generate_visualization", value: "\(generateVisualization)"))
         }
-        
+
         // construct REST request
         let request = RestRequest(
             method: .POST,
@@ -91,10 +91,9 @@ public class TradeoffAnalytics {
             queryParameters: queryParameters,
             messageBody: body
         )
-        
+
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .validate()
             .responseObject() {
                 (response: Response<Dilemma, NSError>) in

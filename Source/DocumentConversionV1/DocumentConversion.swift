@@ -104,8 +104,7 @@ public class DocumentConversion {
         )
         
         // execute REST request
-        Alamofire.upload(request,
-            multipartFormData: { multipartFormData in
+        request.upload({ multipartFormData in
                 multipartFormData.appendBodyPart(fileURL: config, name: "config")
                 multipartFormData.appendBodyPart(fileURL: document, name: "file")
                 if let type = fileType {
@@ -190,7 +189,7 @@ public class DocumentConversion {
         let suffix = "DocumentConversionConfiguration.json"
         let fileName = String(format: "%@_%@", NSUUID().UUIDString, suffix)
         let directoryURL = NSURL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
-        let fileURL = directoryURL.URLByAppendingPathComponent(fileName)!
+        let fileURL = directoryURL.URLByAppendingPathComponent(fileName)
         
         // save JSON dictionary to file
         do {

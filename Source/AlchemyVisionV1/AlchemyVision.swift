@@ -26,10 +26,10 @@ import RestKit
  */
 @available(*, deprecated, message="Its functionality became a part of the IBM Watson Visual Recognition service.")
 public class AlchemyVision {
-    
+
     /// The base URL to use when contacting the service.
     public var serviceURL = "http://gateway-a.watsonplatform.net/calls"
-    
+
     private let apiKey: String
     private let userAgent = buildUserAgent("watson-apis-ios-sdk/0.8.0 AlchemyVisionV1")
     private let domain = "com.ibm.watson.developer-cloud.AlchemyVisionV1"
@@ -44,14 +44,14 @@ public class AlchemyVision {
     public init(apiKey: String) {
         self.apiKey = apiKey
     }
-    
+
     /**
      If the given data represents an error returned by the Alchemy Vision service, then return
      an NSError with information about the error that occured. Otherwise, return nil.
-     
+
      - parameter data: Raw data returned from the service that may represent an error.
      */
-    
+
     private func dataToError(data: NSData) -> NSError? {
         do {
             let json = try JSON(data: data)
@@ -74,7 +74,7 @@ public class AlchemyVision {
     /**
      Perform face recognition on an uploaded image. For each face detected, the service returns
      the estimated bounding box, gender, age, and name (if a celebrity is detected).
- 
+
      - parameter image: The data representation of the image file on which to perform face recognition.
      - parameter knowledgeGraph: Should additional metadata be provided for detected celebrities?
      - parameter failure: A function executed if an error occurs.
@@ -98,7 +98,7 @@ public class AlchemyVision {
                 queryParameters.append(NSURLQueryItem(name: "knowledgeGraph", value: "0"))
             }
         }
-        
+
         // construct REST request
         let request = RestRequest(
             method: .POST,
@@ -109,15 +109,14 @@ public class AlchemyVision {
             queryParameters: queryParameters,
             messageBody: imageData
         )
-        
+
         // execute REST request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) { (response: Response<FaceTags, NSError>) in
-                switch response.result {
-                case .Success(let faceTags): success(faceTags)
-                case .Failure(let error): failure?(error)
-                }
+        request.responseObject(dataToError: dataToError) { (response: Response<FaceTags, NSError>) in
+            switch response.result {
+            case .Success(let faceTags): success(faceTags)
+            case .Failure(let error): failure?(error)
             }
+        }
     }
 
     /**
@@ -160,18 +159,17 @@ public class AlchemyVision {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) { (response: Response<FaceTags, NSError>) in
-                switch response.result {
-                case .Success(let faceTags): success(faceTags)
-                case .Failure(let error): failure?(error)
-                }
+        request.responseObject(dataToError: dataToError) { (response: Response<FaceTags, NSError>) in
+            switch response.result {
+            case .Success(let faceTags): success(faceTags)
+            case .Failure(let error): failure?(error)
             }
+        }
     }
 
     /**
      Identify the primary image in an HTML file.
-     
+
      - parameter html: The HTML file that shall be analyzed to identify the primary image.
      - parameter url: The HTML file's URL, for response-tracking purposes.
      - parameter failure: A function executed if an error occurs.
@@ -192,7 +190,7 @@ public class AlchemyVision {
         }
         getImage(html: html, url: url, failure: failure, success: success)
     }
-    
+
     /**
      Identify the primary image in an HTML document.
 
@@ -215,7 +213,7 @@ public class AlchemyVision {
             failure?(error)
             return
         }
-        
+
         // construct body
         guard let body = "html=\(htmlEncoded)".dataUsingEncoding(NSUTF8StringEncoding) else {
             let failureReason = "Failed to construct body with HTML document."
@@ -224,7 +222,7 @@ public class AlchemyVision {
             failure?(error)
             return
         }
-        
+
         // construct query parameters
         var queryParameters = [NSURLQueryItem]()
         queryParameters.append(NSURLQueryItem(name: "apikey", value: apiKey))
@@ -245,13 +243,12 @@ public class AlchemyVision {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) { (response: Response<ImageLink, NSError>) in
-                switch response.result {
-                case.Success(let imageLinks): success(imageLinks)
-                case .Failure(let error): failure?(error)
-                }
+        request.responseObject(dataToError: dataToError) { (response: Response<ImageLink, NSError>) in
+            switch response.result {
+            case.Success(let imageLinks): success(imageLinks)
+            case .Failure(let error): failure?(error)
             }
+        }
     }
 
     /**
@@ -282,18 +279,17 @@ public class AlchemyVision {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) { (response: Response<ImageLink, NSError>) in
-                switch response.result {
-                case .Success(let imageLinks): success(imageLinks)
-                case .Failure(let error): failure?(error)
-                }
+        request.responseObject(dataToError: dataToError) { (response: Response<ImageLink, NSError>) in
+            switch response.result {
+            case .Success(let imageLinks): success(imageLinks)
+            case .Failure(let error): failure?(error)
             }
+        }
     }
-    
+
     /**
      Perform image tagging on an uploaded image.
- 
+
      - parameter image: The data representation of the image file on which to perform face recognition.
      - parameter forceShowAll: Should lower confidence tags be included in the response?
      - parameter knowledgeGraph: Should hierarchical metadata be provided for each tag?
@@ -326,7 +322,7 @@ public class AlchemyVision {
                 queryParameters.append(NSURLQueryItem(name: "knowledgeGraph", value: "0"))
             }
         }
-        
+
         // construct REST request
         let request = RestRequest(
             method: .POST,
@@ -337,14 +333,13 @@ public class AlchemyVision {
             queryParameters: queryParameters,
             messageBody: imageData
         )
-        
+
         // execute REST request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) { (response: Response<ImageKeywords, NSError>) in
-                switch response.result {
-                case .Success(let imageKeywords): success(imageKeywords)
-                case .Failure(let error): failure?(error)
-                }
+        request.responseObject(dataToError: dataToError) { (response: Response<ImageKeywords, NSError>) in
+            switch response.result {
+            case .Success(let imageKeywords): success(imageKeywords)
+            case .Failure(let error): failure?(error)
+            }
         }
     }
 
@@ -394,18 +389,17 @@ public class AlchemyVision {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) { (response: Response<ImageKeywords, NSError>) in
-                switch response.result {
-                case .Success(let imageKeywords): success(imageKeywords)
-                case .Failure(let error): failure?(error)
-                }
+        request.responseObject(dataToError: dataToError) { (response: Response<ImageKeywords, NSError>) in
+            switch response.result {
+            case .Success(let imageKeywords): success(imageKeywords)
+            case .Failure(let error): failure?(error)
             }
+        }
     }
-    
+
     /**
      Identify text in an uploaded image.
- 
+
      - parameter image: The data representation of the image file on which to perform text detection.
      - parameter failure: A function executed if an error occurs.
      - parameter success: A function executed with the detected text.
@@ -431,14 +425,13 @@ public class AlchemyVision {
             queryParameters: queryParameters,
             messageBody: imageData
         )
-        
+
         // execute REST requeset
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) { (response: Response<SceneText, NSError>) in
-                switch response.result {
-                case .Success(let sceneTexts): success(sceneTexts)
-                case .Failure(let error): failure?(error)
-                }
+        request.responseObject(dataToError: dataToError) { (response: Response<SceneText, NSError>) in
+            switch response.result {
+            case .Success(let sceneTexts): success(sceneTexts)
+            case .Failure(let error): failure?(error)
+            }
         }
     }
 
@@ -470,12 +463,11 @@ public class AlchemyVision {
         )
 
         // execute REST requeset
-        Alamofire.request(request)
-            .responseObject(dataToError: dataToError) { (response: Response<SceneText, NSError>) in
-                switch response.result {
-                case .Success(let sceneTexts): success(sceneTexts)
-                case .Failure(let error): failure?(error)
-                }
+        request.responseObject(dataToError: dataToError) { (response: Response<SceneText, NSError>) in
+            switch response.result {
+            case .Success(let sceneTexts): success(sceneTexts)
+            case .Failure(let error): failure?(error)
             }
+        }
     }
 }

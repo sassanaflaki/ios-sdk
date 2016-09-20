@@ -28,6 +28,7 @@ import Freddy
 public class RestRequest {
     
     private let request: Request
+    private let mutableURLRequest: NSMutableURLRequest
     
     /// Properties to store additional requests if 401 is received
     // private typealias CachedTask = (NSURLResponse?, AnyObject?, NSError?) -> Void
@@ -93,10 +94,31 @@ public class RestRequest {
         
         // create Alamofire request
         self.request = Alamofire.request(request)
+        self.mutableURLRequest = request
     }
 
     public func authenticate(user user: String, password: String, persistence: NSURLCredentialPersistence = .ForSession) -> Self {
         request.authenticate(user: user, password: password, persistence: persistence)
+        return self
+    }
+    
+    public func responseArray<T: JSONDecodable>(
+        queue queue: dispatch_queue_t? = nil,
+              dataToError: (NSData -> NSError?)? = nil,
+              path: [JSONPathType]? = nil,
+              completionHandler: Response<[T], NSError> -> Void)
+        -> Self
+    {
+        request.responseArray(queue: queue, dataToError: dataToError, path: path, completionHandler: completionHandler)
+        return self
+    }
+    
+    public func download(destination: Request.DownloadFileDestination) -> Request {
+        return Alamofire.download(self.mutableURLRequest, destination: destination)
+    }
+
+    public func responseData(queue queue: dispatch_queue_t? = nil, completionHandler: Response<NSData, NSError> -> Void) -> Self {
+        request.responseData(queue: queue, completionHandler: completionHandler)
         return self
     }
     
@@ -111,6 +133,19 @@ public class RestRequest {
         return self
     }
     
+    public func upload(multipartFormData: MultipartFormData -> Void, encodingMemoryThreshold: UInt64 = Manager.MultipartFormDataEncodingMemoryThreshold, encodingCompletion: (Manager.MultipartFormDataEncodingResult -> Void)?)
+    {
+        Alamofire.upload(self.mutableURLRequest, multipartFormData: multipartFormData, encodingMemoryThreshold: encodingMemoryThreshold, encodingCompletion: encodingCompletion)
+    }
+    
+    public func upload(file: NSURL) -> Request {
+        return Alamofire.upload(self.mutableURLRequest, file: file)
+    }
+    
+    public func validate() -> Self {
+        request.validate()
+        return self
+    }
     /** 
  
     - paramater data: data returned by server
