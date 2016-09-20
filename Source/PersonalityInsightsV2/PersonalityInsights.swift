@@ -241,8 +241,7 @@ public class PersonalityInsights {
         )
 
         // execute REST request
-        Alamofire.request(request)
-            .authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseObject(dataToError: dataToError) {
                 (response: Response<Profile, NSError>) in
                 switch response.result {

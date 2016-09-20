@@ -16,6 +16,7 @@
 
 import Foundation
 import Alamofire
+import Freddy
 
 /**
  A `RestRequest` object represents a REST request to a remote server.
@@ -24,22 +25,41 @@ import Alamofire
  an HTTP request message and can also represent itself as an `NSMutableURLRequest`
  for use with `NSURLSession` or `Alamofire`.
  */
-public class RestRequest: URLRequestConvertible {
+public class RestRequest {
+    
+    private let request: Request
+    
+    /// Properties to store additional requests if 401 is received
+    // private typealias CachedTask = (NSURLResponse?, AnyObject?, NSError?) -> Void
+//    private var cachedTasks: [CachedTask]
 
-    private let method: Alamofire.Method
-    private let url: String
-    private let acceptType: String?
-    private let contentType: String?
-    private let userAgent: String?
-    private let queryParameters: [NSURLQueryItem]?
-    private let headerParameters: [String: String]?
-    private let messageBody: NSData?
-
-    /// A representation of the request as an `NSMutableURLRequest`.
-    public var URLRequest: NSMutableURLRequest {
-        
+    /**
+     Initialize a `RestRequest` that represents a REST request to a remote server.
+ 
+     - parameter method: The HTTP method of the request.
+     - parameter url: The url of the request.
+     - parameter acceptType: The acceptable media type of the response's message body.
+     - parameter contentType: The media type of the request's message body.
+     - parameter userAgent: A custom user-agent string that should be used for the request.
+     - parameter queryParameters: The parameters to encode in the url's query string.
+     - parameter headerParameters: The parameters to encode in the request's HTTP header.
+     - parameter messageBody: The data to be included in the message body.
+ 
+     - returns: A `RestRequest` object that represent the REST request to a remote server.
+     */
+    public init(
+        method: Alamofire.Method,
+        url: String,
+        acceptType: String? = nil,
+        contentType: String? = nil,
+        userAgent: String? = nil,
+        queryParameters: [NSURLQueryItem]? = nil,
+        headerParameters: [String: String]? = nil,
+        messageBody: NSData? = nil,
+        authToken: String? = nil)
+    {
         // construct url with query parameters
-        let urlComponents = NSURLComponents(string: self.url)!
+        let urlComponents = NSURLComponents(string: url)!
         if let queryParameters = queryParameters where !queryParameters.isEmpty {
             urlComponents.queryItems = queryParameters
         }
@@ -70,41 +90,117 @@ public class RestRequest: URLRequestConvertible {
                 request.setValue(value, forHTTPHeaderField: key)
             }
         }
-
-        return request
+        
+        // create Alamofire request
+        self.request = Alamofire.request(request)
     }
 
-    /**
-     Initialize a `RestRequest` that represents a REST request to a remote server.
- 
-     - parameter method: The HTTP method of the request.
-     - parameter url: The url of the request.
-     - parameter acceptType: The acceptable media type of the response's message body.
-     - parameter contentType: The media type of the request's message body.
-     - parameter userAgent: A custom user-agent string that should be used for the request.
-     - parameter queryParameters: The parameters to encode in the url's query string.
-     - parameter headerParameters: The parameters to encode in the request's HTTP header.
-     - parameter messageBody: The data to be included in the message body.
- 
-     - returns: A `RestRequest` object that represent the REST request to a remote server.
-     */
-    public init(
-        method: Alamofire.Method,
-        url: String,
-        acceptType: String? = nil,
-        contentType: String? = nil,
-        userAgent: String? = nil,
-        queryParameters: [NSURLQueryItem]? = nil,
-        headerParameters: [String: String]? = nil,
-        messageBody: NSData? = nil)
+    public func authenticate(user user: String, password: String, persistence: NSURLCredentialPersistence = .ForSession) -> Self {
+        request.authenticate(user: user, password: password, persistence: persistence)
+        return self
+    }
+    
+    public func responseObject<T: JSONDecodable>(
+        queue queue: dispatch_queue_t? = nil,
+              dataToError: (NSData -> NSError?)? = nil,
+              path: [JSONPathType]? = nil,
+              completionHandler: Response<T, NSError> -> Void)
+        -> Self
     {
-        self.method = method
-        self.url = url
-        self.acceptType = acceptType
-        self.contentType = contentType
-        self.userAgent = userAgent
-        self.queryParameters = queryParameters
-        self.headerParameters = headerParameters
-        self.messageBody = messageBody
+        request.responseObject(queue: queue, dataToError: dataToError, path: path, completionHandler: completionHandler)
+        return self
     }
+    
+    /** 
+ 
+    - paramater data: data returned by server
+    - paramater response: server's response to the URL's request
+    - paramater error: failure message
+    */
+    
+    // what response
+//    public func responseObject (callback: ((data: NSData?, response: NSURLResponse?, error: NSError?) -> Void)) {
+//        // construct url with query parameters
+//        guard var urlComponents = NSURLComponents(string: self.url) else {
+//            NSLog("Could not build URLComponents object from URL")
+//            return
+//        }
+//        
+//        let urlResponseComponents = NSURLComponents(string: self.url)!
+//        if let queryParameters = queryParameters where !queryParameters.isEmpty {
+//            urlResponseComponents.queryItems = queryParameters
+//        }
+//        
+//        // construct headers
+//        var headers = [String: String]()
+//        
+//        // set the request's accept type
+//        if let acceptType = acceptType {
+//            headers["Accept"] = acceptType
+//        }
+//        
+//        // set the request's content type
+//        if let contentType = contentType {
+//            headers["Content-Type"] = contentType
+//        }
+//        
+//        // set the auth token
+//        if let authToken = authToken {
+//            headers["authToken"] = authToken
+//        }
+//        
+//        // set the request's header parameters
+//        if let headerParameters = headerParameters {
+//            for (key, value) in headerParameters {
+//                headers[key] = value
+//            }
+//        }
+//        
+//        // verify URL is valid, include auth token, then create it
+//        guard let _ = urlResponseComponents.scheme,
+//            let _ = urlResponseComponents.percentEncodedHost,
+//            let url = NSURL(string: self.url + (urlResponseComponents.percentEncodedQuery ?? "")) else {
+//                NSLog("Could not create a valid URL object.")
+//                return
+//        }
+//        
+//        // build request and execute it
+//        var request = NSMutableURLRequest.init(URL: url)
+//        request.HTTPMethod = method.rawValue
+//        request.allHTTPHeaderFields = headers
+//        if let messageBody = messageBody {
+//            request.HTTPBody = messageBody
+//        }
+//        
+//        let session = NSURLSession(configuration: NSURLSessionConfiguration.defaultSessionConfiguration())
+//        let task = session.dataTaskWithRequest(request) { (data, response, error) in
+//            callback(data: data, response: response, error: error)
+//        }
+//        task.resume()
+//    }
+//    
+//    func handleErrorResponse(data: NSData?, response: NSURLResponse?, error: NSError?) -> String? {
+//        if let err = error {
+//            return err.localizedDescription
+//        }
+//        
+//        if let response = response as? NSHTTPURLResponse {
+//            switch response.statusCode {
+//            case 200:
+//                return nil
+//            case 401:
+//                // If response is unauthorized, append request to see if we need to refresh token.
+//                // Check if cached list is empty
+//                return checkRefresh()
+//            default:
+//                return "Received status code: \((response as? NSHTTPURLResponse)?.statusCode)"
+//            }
+//        } else {
+//            return "Failed to get valid response, received status code: \((response as? NSHTTPURLResponse)?.statusCode)"
+//        }
+//    }
+//    
+//    func checkRefresh() -> String? {
+//        return nil
+//    }
 }
