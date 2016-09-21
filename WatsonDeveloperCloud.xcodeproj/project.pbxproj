@@ -374,6 +374,7 @@
 		B1AAD3161D0F13FA002DAB84 /* car.png in Resources */ = {isa = PBXBuildFile; fileRef = B1AAD3141D0F13F5002DAB84 /* car.png */; };
 		B1C4DFD21D134E37004CC4B0 /* arsArticle.html in Resources */ = {isa = PBXBuildFile; fileRef = B1C4DFCF1D134DB4004CC4B0 /* arsArticle.html */; };
 		BE1733921D1FE60C003E8966 /* thomas.png in Resources */ = {isa = PBXBuildFile; fileRef = BE1733901D1FE557003E8966 /* thomas.png */; };
+		CE5DB2971D9093AF00942043 /* AuthorizationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5DB2961D9093AF00942043 /* AuthorizationManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -995,6 +996,7 @@
 		B1F21DF71CE2461800393146 /* ToneAnalyzerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToneAnalyzerTests.swift; sourceTree = "<group>"; };
 		B1F21DF81CE2461800393146 /* ToneAnalyzer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToneAnalyzer.swift; sourceTree = "<group>"; };
 		BE1733901D1FE557003E8966 /* thomas.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = thomas.png; sourceTree = "<group>"; };
+		CE5DB2961D9093AF00942043 /* AuthorizationManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthorizationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1575,6 +1577,7 @@
 			children = (
 				7AAA9A3C1CEE3059002C9564 /* RestUtilities.swift */,
 				7A61174F1CB5988B009A4DA1 /* RestRequest.swift */,
+				CE5DB2961D9093AF00942043 /* AuthorizationManager.swift */,
 				7A6117501CB5988B009A4DA1 /* RestSerialization.swift */,
 				7AAA9A3D1CEE3059002C9564 /* RestToken.swift */,
 			);
@@ -3854,6 +3857,7 @@
 			files = (
 				B1A8E5491D19DCDF00678412 /* Document.swift in Sources */,
 				B1A8E5511D19DCDF00678412 /* Keyword.swift in Sources */,
+				CE5DB2971D9093AF00942043 /* AuthorizationManager.swift in Sources */,
 				B1A8E5541D19DCDF00678412 /* NewsResult.swift in Sources */,
 				B1A8E54F1D19DCDF00678412 /* Feed.swift in Sources */,
 				B1A8E54A1D19DCDF00678412 /* DocumentEnriched.swift in Sources */,

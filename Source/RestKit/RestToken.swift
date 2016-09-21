@@ -27,8 +27,16 @@ public class RestToken {
     public var isRefreshing = false
     public var retries = 0
     
+    // The URL of the endpoint used to obtain a token for the given service.
     private var tokenURL: String
+    
+    // The URL of the given service, passed as a parameter to the token URL endpoint.
+    private var serviceURL: String
+    
+    // The username credential associated with the Watson Developer Cloud service.
     private var username: String
+    
+    // The password credential associated with the Watson Developer Cloud service.
     private var password: String
     
     /**
@@ -38,8 +46,12 @@ public class RestToken {
      - parameter username:   The username credential used to obtain a token.
      - parameter password:   The password credential used to obtain a token.
      */
-    public init(tokenURL: String, username: String, password: String) {
+    public init(tokenURL: String = "https://stream.watsonplatform.net/authorization/api/v1/token",
+                serviceURL: String,
+                username: String,
+                password: String) {
         self.tokenURL = tokenURL
+        self.serviceURL = serviceURL
         self.username = username
         self.password = password
     }
@@ -54,6 +66,7 @@ public class RestToken {
         failure: (NSError -> Void)? = nil,
         success: (Void -> Void)? = nil)
     {
+        tokenURL = tokenURL + "?url=" + serviceURL
         Alamofire.request(.GET, tokenURL)
             .authenticate(user: username, password: password)
             .validate()
