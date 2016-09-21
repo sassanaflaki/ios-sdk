@@ -47,6 +47,7 @@ class VisualRecognitionTests: XCTestCase {
         super.setUp()
         continueAfterFailure = false
         instantiateVisualRecognition()
+        cleanupExtraClassifiers()
         loadImageFiles()
         lookupClassifier()
     }
@@ -56,6 +57,20 @@ class VisualRecognitionTests: XCTestCase {
         let apiKey = Credentials.VisualRecognitionAPIKey
         let version = "2016-05-10"
         visualRecognition = VisualRecognition(apiKey: apiKey, version: version)
+    }
+    
+    func cleanupExtraClassifiers () {
+        let description = "Delete any stale custom classifiers previously created by unit tests."
+        let expectation = expectationWithDescription(description)
+        visualRecognition.getClassifiers(success: { classifiers in
+            for classifier in classifiers {
+                if classifier.name != "swift-sdk-unit-test-cars-trucks" {
+                    self.visualRecognition.deleteClassifier(classifier.classifierID)
+                }
+            }
+            expectation.fulfill()
+        })
+        waitForExpectations()
     }
     
     /** Load image files with class examples and test images. */
