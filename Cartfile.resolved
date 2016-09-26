@@ -1,4 +1,5 @@
 github "Alamofire/Alamofire" "3.4.1"
 github "bignerdranch/Freddy" "2.1.0"
 github "AliSoftware/OHHTTPStubs" "5.2.0"
+github "sccheng/SWHttpTrafficRecorder" "ddd85d0c67376df94aeb357412f86059cd66528d"
 github "daltoniam/Starscream" "1.1.3"

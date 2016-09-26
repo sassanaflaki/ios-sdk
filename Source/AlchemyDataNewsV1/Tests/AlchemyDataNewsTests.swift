@@ -15,6 +15,7 @@
  **/
 import XCTest
 import AlchemyDataNewsV1
+//import SWHttpTrafficRecorder
 
 class AlchemyDataNewsTests: XCTestCase {
     
@@ -70,6 +71,16 @@ class AlchemyDataNewsTests: XCTestCase {
     }
     
     func testGetNewsWithQuery() {
+        
+//        if let dir = NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomainMask.AllDomainsMask, true).first {
+//            do {
+//                SWHttpTrafficRecorder.sharedRecorder().recordingFormat = SWHTTPTrafficRecordingFormat.BodyOnly
+//                try SWHttpTrafficRecorder.sharedRecorder().startRecordingAtPath(dir)
+//            } catch {
+//                print("recording didn't work")
+//            }
+//        }
+        
         let description = "Get articles with IBM in the title and assorted values"
         let expectation = expectationWithDescription(description)
         

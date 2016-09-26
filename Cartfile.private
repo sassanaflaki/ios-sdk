@@ -1,1 +1,2 @@
 github "AliSoftware/OHHTTPStubs" ~> 5.0
+github "sccheng/SWHttpTrafficRecorder" "ddd85d0c67376df94aeb357412f86059cd66528d"
