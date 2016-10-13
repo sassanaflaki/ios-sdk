@@ -25,19 +25,21 @@ import RestKit
  to help the writer improve their intended language tones.
 **/
 public class ToneAnalyzer {
-
+    
     /// The base URL to use when contacting the service.
     public var serviceURL = "https://gateway.watsonplatform.net/tone-analyzer/api"
-
+    
+    /// The default HTTP headers for all requests to the service.
+    public var defaultHeaders = [String: String]()
+    
     private let username: String
     private let password: String
     private let version: String
-    private let userAgent = buildUserAgent("watson-apis-ios-sdk/0.8.0 ToneAnalyzerV3")
     private let domain = "com.ibm.watson.developer-cloud.ToneAnalyzerV3"
 
     /**
      Create a `ToneAnalyzer` object.
-
+ 
      - parameter username: The username used to authenticate with the service.
      - parameter password: The password used to authenticate with the service.
      - parameter version: The release date of the version of the API to use. Specify the date
@@ -50,33 +52,11 @@ public class ToneAnalyzer {
     }
 
     /**
-     If the given data represents an error returned by the Visual Recognition service, then return
-     an NSError with information about the error that occured. Otherwise, return nil.
-
-     - parameter data: Raw data returned from the service that may represent an error.
-     */
-    private func dataToError(data: NSData) -> NSError? {
-        do {
-            let json = try JSON(data: data)
-            let code = try json.int("code")
-            let error = try json.string("error")
-            let help = try? json.string("help")
-            let userInfo = [
-                NSLocalizedFailureReasonErrorKey: error,
-                NSLocalizedRecoverySuggestionErrorKey: "\(help)"
-            ]
-            return NSError(domain: domain, code: code, userInfo: userInfo)
-        } catch {
-            return nil
-        }
-    }
-
-    /**
      Analyze the tone of the given text.
-
+     
      The message is analyzed for several tones—social, emotional, and writing. For each tone,
      various traits are derived (e.g. conscientiousness, agreeableness, and openness).
-
+     
      - parameter text: The text to analyze.
      - parameter tones: Filter the results by a specific tone. Valid values for `tones` are
             `emotion`, `writing`, or `social`.
@@ -88,8 +68,8 @@ public class ToneAnalyzer {
         text: String,
         tones: [String]? = nil,
         sentences: Bool? = nil,
-        failure: (NSError -> Void)? = nil,
-        success: ToneAnalysis -> Void)
+        failure: ((Error) -> Void)? = nil,
+        success: @escaping (ToneAnalysis) -> Void)
     {
         // construct body
         guard let body = try? ["text": text].toJSON().serialize() else {
@@ -99,36 +79,35 @@ public class ToneAnalyzer {
             failure?(error)
             return
         }
-
+        
         // construct query parameters
-        var queryParameters = [NSURLQueryItem]()
-        queryParameters.append(NSURLQueryItem(name: "version", value: version))
+        var queryParameters = [URLQueryItem]()
+        queryParameters.append(URLQueryItem(name: "version", value: version))
         if let tones = tones {
-            let tonesList = tones.joinWithSeparator(",")
-            queryParameters.append(NSURLQueryItem(name: "tones", value: tonesList))
+            let tonesList = tones.joined(separator: ",")
+            queryParameters.append(URLQueryItem(name: "tones", value: tonesList))
         }
         if let sentences = sentences {
-            queryParameters.append(NSURLQueryItem(name: "sentences", value: "\(sentences)"))
+            queryParameters.append(URLQueryItem(name: "sentences", value: "\(sentences)"))
         }
-
+        
         // construct REST request
         let request = RestRequest(
-            method: .POST,
+            method: .post,
             url: serviceURL + "/v3/tone",
+            headerParameters: defaultHeaders,
             acceptType: "application/json",
             contentType: "application/json",
-            userAgent: userAgent,
             queryParameters: queryParameters,
             messageBody: body
         )
-
+        
         // execute REST request
         request.authenticate(user: username, password: password)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<ToneAnalysis, NSError>) in
+            .responseObject() { (response: DataResponse<ToneAnalysis>) in
                 switch response.result {
-                case .Success(let toneAnalysis): success(toneAnalysis)
-                case .Failure(let error): failure?(error)
+                case .success(let toneAnalysis): success(toneAnalysis)
+                case .failure(let error): failure?(error)
                 }
             }
     }

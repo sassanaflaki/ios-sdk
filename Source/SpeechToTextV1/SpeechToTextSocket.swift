@@ -45,7 +45,8 @@ internal class SpeechToTextSocket {
         learningOptOut: Bool?,
         serviceURL: String,
         tokenURL: String,
-        websocketsURL: String)
+        websocketsURL: String,
+        defaultHeaders: [String: String])
     {
         // initialize authentication token
         let tokenURL = tokenURL + "?url=" + serviceURL
@@ -57,6 +58,11 @@ internal class SpeechToTextSocket {
         // initialize socket
         socket = WebSocket(url: url)
         socket.delegate = self
+        
+        // set default headers
+        for (key, value) in defaultHeaders {
+            socket.headers[key] = value
+        }
         
         // configure operation queue
         queue.maxConcurrentOperationCount = 1
@@ -247,7 +253,7 @@ extension SpeechToTextSocket: WebSocketDelegate {
         if let results = try? json.decode(type: SpeechRecognitionEvent.self) {
             onResultsMessage(results)
         }
-        if let error = try? json.string("error") {
+        if let error = try? json.getString(at: "error") {
             onErrorMessage(error)
         }
     }

@@ -71,26 +71,26 @@ public struct Mention: JSONDecodable {
     
     /// Used internally to initialize a `Mention` model from JSON.
     public init(json: JSON) throws {
-        mentionID = try json.string("mid")
-        begin = try json.int("begin")
-        end = try json.int("end")
-        headBegin = try json.int("head-begin")
-        headEnd = try json.int("head-end")
-        entityID = try json.string("eid")
-        entityType = try json.string("etype")
-        entityRole = try json.string("role")
-        metonymy = try json.bool("metonymy")
-        score = try json.double("score")
-        corefScore = try json.double("corefScore")
-        text = try json.string("text")
+        mentionID = try json.getString(at: "mid")
+        begin = try json.getInt(at: "begin")
+        end = try json.getInt(at: "end")
+        headBegin = try json.getInt(at: "head-begin")
+        headEnd = try json.getInt(at: "head-end")
+        entityID = try json.getString(at: "eid")
+        entityType = try json.getString(at: "etype")
+        entityRole = try json.getString(at: "role")
+        metonymy = try json.getBool(at: "metonymy")
+        score = try json.getDouble(at: "score")
+        corefScore = try json.getDouble(at: "corefScore")
+        text = try json.getString(at: "text")
         
-        guard let mentionType = MentionType(rawValue: try json.string("mtype")) else {
-            throw JSON.Error.ValueNotConvertible(value: json, to: MentionType.self)
+        guard let mentionType = MentionType(rawValue: try json.getString(at: "mtype")) else {
+            throw JSON.Error.valueNotConvertible(value: json, to: MentionType.self)
         }
         type = mentionType
         
-        guard let mClass = MentionClass(rawValue: try json.string("class")) else {
-            throw JSON.Error.ValueNotConvertible(value: json, to: MentionClass.self)
+        guard let mClass = MentionClass(rawValue: try json.getString(at: "class")) else {
+            throw JSON.Error.valueNotConvertible(value: json, to: MentionClass.self)
         }
         mentionClass = mClass
     }

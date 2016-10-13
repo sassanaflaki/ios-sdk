@@ -27,8 +27,8 @@ import Freddy
  */
 public class RestRequest {
     
-    private let request: Request
-    private let mutableURLRequest: NSMutableURLRequest
+    private let request: DataRequest
+//    private let mutableURLRequest: NSMutableURLRequest
     
     /// Properties to store additional requests if 401 is received
     // private typealias CachedTask = (NSURLResponse?, AnyObject?, NSError?) -> Void
@@ -49,26 +49,25 @@ public class RestRequest {
      - returns: A `RestRequest` object that represent the REST request to a remote server.
      */
     public init(
-        method: Alamofire.Method,
+        method: Alamofire.HTTPMethod,
         url: String,
+        headerParameters: [String: String],
         acceptType: String? = nil,
         contentType: String? = nil,
-        userAgent: String? = nil,
-        queryParameters: [NSURLQueryItem]? = nil,
-        headerParameters: [String: String]? = nil,
-        messageBody: NSData? = nil,
+        queryParameters: [URLQueryItem]? = nil,
+        messageBody: Data? = nil,
         authToken: String? = nil)
     {
         // construct url with query parameters
         let urlComponents = NSURLComponents(string: url)!
-        if let queryParameters = queryParameters where !queryParameters.isEmpty {
+        if let queryParameters = queryParameters, !queryParameters.isEmpty {
             urlComponents.queryItems = queryParameters
         }
         
         // construct basic mutable request
-        let request = NSMutableURLRequest(URL: urlComponents.URL!)
-        request.HTTPMethod = method.rawValue
-        request.HTTPBody = messageBody
+        var request = URLRequest(url: urlComponents.url!)
+        request.httpMethod = method.rawValue
+        request.httpBody = messageBody
         
         // set the request's accept type
         if let acceptType = acceptType {
@@ -80,67 +79,93 @@ public class RestRequest {
             request.setValue(contentType, forHTTPHeaderField: "Content-Type")
         }
         
+        // generate userAgent
+        let userAgent: String = {
+            let sdk = "watson-apis-ios-sdk"
+            let sdkVersion = "0.8.0"
+            
+            let operatingSystem: String = {
+                #if os(iOS)
+                    return "iOS"
+                #elseif os(watchOS)
+                    return "watchOS"
+                #elseif os(tvOS)
+                    return "tvOS"
+                #elseif os(macOS)
+                    return "macOS"
+                #elseif os(Linux)
+                    return "Linux"
+                #else
+                    return "Unknown"
+                #endif
+            }()
+            
+            let operatingSystemVersion: String = {
+                let os = ProcessInfo.processInfo.operatingSystemVersion
+                return "\(os.majorVersion).\(os.minorVersion).\(os.patchVersion)"
+            }()
+            
+            return "\(sdk)/\(sdkVersion) \(operatingSystem)/\(operatingSystemVersion)"
+        }()
+        
         // set the request's user agent
-        if let userAgent = userAgent {
-            request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
-        }
+        request.setValue(userAgent, forHTTPHeaderField: "User-Agent")
         
         // set the request's header parameters
-        if let headerParameters = headerParameters {
-            for (key, value) in headerParameters {
-                request.setValue(value, forHTTPHeaderField: key)
-            }
+        for (key, value) in headerParameters {
+            request.setValue(value, forHTTPHeaderField: key)
         }
+        
         
         // create Alamofire request
         self.request = Alamofire.request(request)
-        self.mutableURLRequest = request
+//        self.mutableURLRequest = request
     }
 
-    public func authenticate(user user: String, password: String, persistence: NSURLCredentialPersistence = .ForSession) -> Self {
+    public func authenticate(user user: String, password: String, persistence: URLCredential.Persistence = .forSession) -> Self {
         request.authenticate(user: user, password: password, persistence: persistence)
         return self
     }
     
     public func responseArray<T: JSONDecodable>(
-        queue queue: dispatch_queue_t? = nil,
-              dataToError: (NSData -> NSError?)? = nil,
+        queue queue: DispatchQueue? = nil,
+              dataToError: ((NSData) -> NSError?)? = nil,
               path: [JSONPathType]? = nil,
-              completionHandler: Response<[T], NSError> -> Void)
+              completionHandler: @escaping (DataResponse<[T]>) -> Void)
         -> Self
     {
-        request.responseArray(queue: queue, dataToError: dataToError, path: path, completionHandler: completionHandler)
+        request.responseArray(queue: queue, path: path, completionHandler: completionHandler)
         return self
     }
     
-    public func download(destination: Request.DownloadFileDestination) -> Request {
-        return Alamofire.download(self.mutableURLRequest, destination: destination)
-    }
+//    public func download(destination: DownloadRequest.DownloadFileDestination) -> Request {
+//        return Alamofire.download(self.mutableURLRequest, destination: destination)
+//    }
 
-    public func responseData(queue queue: dispatch_queue_t? = nil, completionHandler: Response<NSData, NSError> -> Void) -> Self {
+    public func responseData(queue queue: DispatchQueue? = nil, completionHandler: @escaping (DataResponse<Data>) -> Void) -> Self {
         request.responseData(queue: queue, completionHandler: completionHandler)
         return self
     }
     
     public func responseObject<T: JSONDecodable>(
-        queue queue: dispatch_queue_t? = nil,
-              dataToError: (NSData -> NSError?)? = nil,
+        queue queue: DispatchQueue? = nil,
+              dataToError: ((Data) -> NSError?)? = nil,
               path: [JSONPathType]? = nil,
-              completionHandler: Response<T, NSError> -> Void)
+              completionHandler: @escaping (DataResponse<T>) -> Void)
         -> Self
     {
-        request.responseObject(queue: queue, dataToError: dataToError, path: path, completionHandler: completionHandler)
+        request.responseObject(queue: queue, path: path, completionHandler: completionHandler)
         return self
     }
     
-    public func upload(multipartFormData: MultipartFormData -> Void, encodingMemoryThreshold: UInt64 = Manager.MultipartFormDataEncodingMemoryThreshold, encodingCompletion: (Manager.MultipartFormDataEncodingResult -> Void)?)
-    {
-        Alamofire.upload(self.mutableURLRequest, multipartFormData: multipartFormData, encodingMemoryThreshold: encodingMemoryThreshold, encodingCompletion: encodingCompletion)
-    }
-    
-    public func upload(file: NSURL) -> Request {
-        return Alamofire.upload(self.mutableURLRequest, file: file)
-    }
+//    public func upload(multipartFormData: (MultipartFormData) -> Void, encodingMemoryThreshold: UInt64 = SessionManager.multipartFormDataEncodingMemoryThreshold, encodingCompletion: ((SessionManager.MultipartFormDataEncodingResult) -> Void)?)
+//    {
+//        Alamofire.upload(self.mutableURLRequest, multipartFormData: multipartFormData, encodingMemoryThreshold: encodingMemoryThreshold, encodingCompletion: encodingCompletion)
+//    }
+//    
+//    public func upload(file: NSURL) -> Request {
+//        return Alamofire.upload(self.mutableURLRequest, file: file)
+//    }
     
     public func validate() -> Self {
         request.validate()

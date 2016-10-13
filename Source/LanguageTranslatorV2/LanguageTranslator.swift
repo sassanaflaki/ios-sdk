@@ -27,16 +27,18 @@ import RestKit
 public class LanguageTranslator {
 
     /// The base URL to use when contacting the service.
-    public var serviceURL = "https://gateway.watsonplatform.net/language-translation/api"
-
+    public var serviceURL = "https://gateway.watsonplatform.net/language-translator/api"
+    
+    /// The default HTTP headers for all requests to the service.
+    public var defaultHeaders = [String: String]()
+    
     private let username: String
     private let password: String
-    private let userAgent = buildUserAgent("watson-apis-ios-sdk/0.8.0 LanguageTranslatorV2")
     private let domain = "com.ibm.watson.developer-cloud.LanguageTranslatorV2"
 
     /**
      Create a `LanguageTranslator` object.
-
+     
      - parameter username: The username used to authenticate with the service.
      - parameter password: The password used to authenticate with the service.
      */
@@ -48,14 +50,14 @@ public class LanguageTranslator {
     /**
      If the given data represents an error returned by the Visual Recognition service, then return
      an NSError with information about the error that occured. Otherwise, return nil.
-
+     
      - parameter data: Raw data returned from the service that may represent an error.
      */
-    private func dataToError(data: NSData) -> NSError? {
+    private func dataToError(data: Data) -> Error? {
         do {
             let json = try JSON(data: data)
-            let code = try json.int("error_code")
-            let message = try json.string("error_message")
+            let code = try json.getInt(at: "error_code")
+            let message = try json.getString(at: "error_message")
             let userInfo = [NSLocalizedFailureReasonErrorKey: message]
             return NSError(domain: domain, code: code, userInfo: userInfo)
         } catch {
@@ -67,7 +69,7 @@ public class LanguageTranslator {
 
     /**
      List the available standard and custom models.
-
+     
      - parameter source: Specify a source to filter models by source language.
      - parameter target: Specify a target to filter models by target language.
      - parameter defaultModelsOnly: Specify `true` to filter models by whether they are default.
@@ -75,54 +77,53 @@ public class LanguageTranslator {
      - parameter success: A function executed with the list of available standard and custom models.
      */
     public func getModels(
-        source source: String? = nil,
+        source: String? = nil,
         target: String? = nil,
         defaultModelsOnly: Bool? = nil,
-        failure: (NSError -> Void)? = nil,
-        success: [TranslationModel] -> Void)
+        failure: ((Error) -> Void)? = nil,
+        success: @escaping ([TranslationModel]) -> Void)
     {
         // construct query parameters
-        var queryParameters = [NSURLQueryItem]()
+        var queryParameters = [URLQueryItem]()
         if let source = source {
-            let queryParameter = NSURLQueryItem(name: "source", value: source)
+            let queryParameter = URLQueryItem(name: "source", value: source)
             queryParameters.append(queryParameter)
         }
         if let target = target {
-            let queryParameter = NSURLQueryItem(name: "target", value: target)
+            let queryParameter = URLQueryItem(name: "target", value: target)
             queryParameters.append(queryParameter)
         }
         if let defaultModelsOnly = defaultModelsOnly {
-            let queryParameter = NSURLQueryItem(name: "default", value: "\(defaultModelsOnly)")
+            let queryParameter = URLQueryItem(name: "default", value: "\(defaultModelsOnly)")
             queryParameters.append(queryParameter)
         }
 
         // construct REST request
         let request = RestRequest(
-            method: .GET,
+            method: .get,
             url: serviceURL + "/v2/models",
+            headerParameters: defaultHeaders,
             acceptType: "application/json",
-            userAgent: userAgent,
             queryParameters: queryParameters
         )
 
         // execute REST request
         request.authenticate(user: username, password: password)
-            .responseArray(dataToError: dataToError, path: ["models"]) {
-                (response: Response<[TranslationModel], NSError>) in
+            .responseArray(path: ["models"]) { (response: DataResponse<[TranslationModel]>) in
                 switch response.result {
-                case .Success(let models): success(models)
-                case .Failure(let error): failure?(error)
+                case .success(let models): success(models)
+                case .failure(let error): failure?(error)
                 }
             }
     }
 
     /**
      Create a custom language translator model by uploading a TMX glossary file.
-
+     
      Depending on the size of the file, training can range from minutes for a glossary to several
      hours for a large parallel corpus. Glossary files must be less than 10 MB. The cumulative file
      size of all uploaded glossary and corpus files is limited to 250 MB.
-
+     
      - parameter baseModelID: Specifies the domain model that is used as the base for the training.
      - parameter name: The model name. Valid characters are letters, numbers, -, and _. No spaces.
      - parameter forcedGlossary: A TMX file with your customizations. Anything that is specified in
@@ -134,43 +135,43 @@ public class LanguageTranslator {
     public func createModel(
         baseModelID: String,
         name: String? = nil,
-        forcedGlossary: NSURL,
-        failure: (NSError -> Void)? = nil,
-        success: String -> Void)
+        forcedGlossary: URL,
+        failure: ((Error) -> Void)? = nil,
+        success: @escaping (String) -> Void)
     {
         // construct query parameters
-        var queryParameters = [NSURLQueryItem]()
-        queryParameters.append(NSURLQueryItem(name: "base_model_id", value: baseModelID))
+        var queryParameters = [URLQueryItem]()
+        queryParameters.append(URLQueryItem(name: "base_model_id", value: baseModelID))
         if let name = name {
-            let queryParameter = NSURLQueryItem(name: "name", value: name)
+            let queryParameter = URLQueryItem(name: "name", value: name)
             queryParameters.append(queryParameter)
         }
 
         // construct REST request
         let request = RestRequest(
-            method: .POST,
+            method: .post,
             url: serviceURL + "/v2/models",
+            headerParameters: defaultHeaders,
             acceptType: "application/json",
-            userAgent: userAgent,
             queryParameters: queryParameters
         )
 
         // execute REST request
         request.upload({ multipartFormData in
-                multipartFormData.appendBodyPart(fileURL: forcedGlossary, name: "forced_glossary")
+                multipartFormData.append(forcedGlossary, withName: "forced_glossary")
             },
+            with: request,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
-                case .Success(let upload, _, _):
+                case .success(let upload, _, _):
                     upload.authenticate(user: self.username, password: self.password)
-                    upload.responseObject(dataToError: self.dataToError, path: ["model_id"]) {
-                        (response: Response<String, NSError>) in
+                    upload.responseObject(path: ["model_id"]) { (response: DataResponse<String>) in
                         switch response.result {
-                        case .Success(let modelID): success(modelID)
-                        case .Failure(let error): failure?(error)
+                        case .success(let modelID): success(modelID)
+                        case .failure(let error): failure?(error)
                         }
                     }
-                case .Failure:
+                case .failure:
                     let failureReason = "Forced glossary could not be encoded as form data."
                     let userInfo = [NSLocalizedFailureReasonErrorKey: failureReason]
                     let error = NSError(domain: self.domain, code: 0, userInfo: userInfo)
@@ -183,34 +184,34 @@ public class LanguageTranslator {
 
     /**
      Delete a trained translation model.
-
+     
      - parameter modelID: The translation model's identifier.
      - parameter failure: A function executed if an error occurs.
      - parameter success: A function executed after the given model has been deleted.
      */
     public func deleteModel(
         modelID: String,
-        failure: (NSError -> Void)? = nil,
-        success: (Void -> Void)? = nil)
+        failure: ((Error) -> Void)? = nil,
+        success: ((Void) -> Void)? = nil)
     {
         // construct REST request
         let request = RestRequest(
-            method: .DELETE,
+            method: .delete,
             url: serviceURL + "/v2/models/\(modelID)",
-            acceptType: "application/json",
-            userAgent: userAgent
+            headerParameters: defaultHeaders,
+            acceptType: "application/json"
         )
 
         // execute REST request
         request.authenticate(user: username, password: password)
             .responseData { response in
                 switch response.result {
-                case .Success(let data):
-                    switch self.dataToError(data) {
-                    case .Some(let error): failure?(error)
-                    case .None: success?()
+                case .success(let data):
+                    switch self.dataToError(data: data) {
+                    case .some(let error): failure?(error)
+                    case .none: success?()
                     }
-                case .Failure(let error):
+                case .failure(let error):
                     failure?(error)
                 }
             }
@@ -218,31 +219,30 @@ public class LanguageTranslator {
 
     /**
      Get information about the given translation model, including training status.
-
+     
      - parameter modelID: The translation model's identifier.
      - parameter failure: A function executed if an error occurs.
      - parameter success: A function executed with the retrieved information about the model.
      */
     public func getModel(
         modelID: String,
-        failure: (NSError -> Void)? = nil,
-        success: MonitorTraining -> Void)
+        failure: ((Error) -> Void)? = nil,
+        success: @escaping (MonitorTraining) -> Void)
     {
         // construct REST request
         let request = RestRequest(
-            method: .GET,
+            method: .get,
             url: serviceURL + "/v2/models/\(modelID)",
-            acceptType: "application/json",
-            userAgent: userAgent
+            headerParameters: defaultHeaders,
+            acceptType: "application/json"
         )
 
         // execute REST request
         request.authenticate(user: username, password: password)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<MonitorTraining, NSError>) in
+            .responseObject() { (response: DataResponse<MonitorTraining>) in
                 switch response.result {
-                case .Success(let monitorTraining): success(monitorTraining)
-                case .Failure(let error): failure?(error)
+                case .success(let monitorTraining): success(monitorTraining)
+                case .failure(let error): failure?(error)
                 }
             }
     }
@@ -251,7 +251,7 @@ public class LanguageTranslator {
 
     /**
      Translate text from a source language to a target language.
-
+     
      - parameter text: The text to translate.
      - parameter modelID: The unique modelID of the translation model that shall be used to
             translate the text. The modelID inherently specifies the source, target language, and
@@ -262,16 +262,16 @@ public class LanguageTranslator {
     public func translate(
         text: String,
         modelID: String,
-        failure: (NSError -> Void)? = nil,
-        success: TranslateResponse -> Void)
+        failure: ((Error) -> Void)? = nil,
+        success: @escaping (TranslateResponse) -> Void)
     {
         let translateRequest = TranslateRequest(text: [text], modelID: modelID)
-        translate(translateRequest, failure: failure, success: success)
+        translate(translateRequest: translateRequest, failure: failure, success: success)
     }
 
     /**
      Translate text from a source language to a target language.
-
+     
      - parameter text: The text to translate.
      - parameter modelID: The unique modelID of the translation model that shall be used to
             translate the text. The modelID inherently specifies the source, target language, and
@@ -282,16 +282,16 @@ public class LanguageTranslator {
     public func translate(
         text: [String],
         modelID: String,
-        failure: (NSError -> Void)? = nil,
-        success: TranslateResponse -> Void)
+        failure: ((Error) -> Void)? = nil,
+        success: @escaping (TranslateResponse) -> Void)
     {
         let translateRequest = TranslateRequest(text: text, modelID: modelID)
-        translate(translateRequest, failure: failure, success: success)
+        translate(translateRequest: translateRequest, failure: failure, success: success)
     }
-
+    
     /**
      Translate text from a source language to a target language.
-
+     
      - parameter text: The text to translate.
      - parameter source:  The source language in 2 or 5 letter language code. Use 2 letter codes
             except when clarifying between multiple supported languages.
@@ -304,16 +304,16 @@ public class LanguageTranslator {
         text: String,
         source: String,
         target: String,
-        failure: (NSError -> Void)? = nil,
-        success: TranslateResponse -> Void)
+        failure: ((Error) -> Void)? = nil,
+        success: @escaping (TranslateResponse) -> Void)
     {
         let translateRequest = TranslateRequest(text: [text], source: source, target: target)
-        translate(translateRequest, failure: failure, success: success)
+        translate(translateRequest: translateRequest, failure: failure, success: success)
     }
 
     /**
      Translate text from a source language to a target language.
-
+     
      - parameter text: The text to translate.
      - parameter source:  The source language in 2 or 5 letter language code. Use 2 letter codes
             except when clarifying between multiple supported languages.
@@ -326,16 +326,16 @@ public class LanguageTranslator {
         text: [String],
         source: String,
         target: String,
-        failure: (NSError -> Void)? = nil,
-        success: TranslateResponse -> Void)
+        failure: ((Error) -> Void)? = nil,
+        success: @escaping (TranslateResponse) -> Void)
     {
         let translateRequest = TranslateRequest(text: text, source: source, target: target)
-        translate(translateRequest, failure: failure, success: success)
+        translate(translateRequest: translateRequest, failure: failure, success: success)
     }
 
     /**
      Process a translation request.
-
+ 
      - parameter translateRequest: A `TranslateRequest` object representing the parameters of the
             request to the Language Translator service.
      - parameter failure: A function executed if an error occurs.
@@ -343,8 +343,8 @@ public class LanguageTranslator {
      */
     private func translate(
         translateRequest: TranslateRequest,
-        failure: (NSError -> Void)? = nil,
-        success: TranslateResponse -> Void)
+        failure: ((Error) -> Void)? = nil,
+        success: @escaping (TranslateResponse) -> Void)
     {
         // serialize translate request to JSON
         guard let body = try? translateRequest.toJSON().serialize() else {
@@ -357,21 +357,20 @@ public class LanguageTranslator {
 
         // construct REST request
         let request = RestRequest(
-            method: .POST,
+            method: .post,
             url: serviceURL + "/v2/translate",
+            headerParameters: defaultHeaders,
             acceptType: "application/json",
             contentType: "application/json",
-            userAgent: userAgent,
             messageBody: body
         )
 
         // execute REST request
         request.authenticate(user: username, password: password)
-            .responseObject(dataToError: dataToError) {
-                (response: Response<TranslateResponse, NSError>) in
+            .responseObject() { (response: DataResponse<TranslateResponse>) in
                 switch response.result {
-                case .Success(let translateResponse): success(translateResponse)
-                case .Failure(let error): failure?(error)
+                case .success(let translateResponse): success(translateResponse)
+                case .failure(let error): failure?(error)
                 }
             }
     }
@@ -380,47 +379,46 @@ public class LanguageTranslator {
 
     /**
      Get a list of all languages that can be identified.
-
+     
      - parameter failure: A function executed if an error occurs.
      - parameter success: A function executed with the list of all languages that can be identified.
      */
     public func getIdentifiableLanguages(
-        failure: (NSError -> Void)? = nil,
-        success: [IdentifiableLanguage] -> Void)
+        failure: ((Error) -> Void)? = nil,
+        success: @escaping ([IdentifiableLanguage]) -> Void)
     {
         // construct REST request
         let request = RestRequest(
-            method: .GET,
+            method: .get,
             url: serviceURL + "/v2/identifiable_languages",
-            contentType: "application/json",
-            userAgent: userAgent
+            headerParameters: defaultHeaders,
+            contentType: "application/json"
         )
 
         // execute REST request
         request.authenticate(user: username, password: password)
-            .responseArray(dataToError: dataToError, path: ["languages"]) {
-                (response: Response<[IdentifiableLanguage], NSError>) in
+            .responseArray(path: ["languages"]) { (response: DataResponse<[IdentifiableLanguage]>) in
                 switch response.result {
-                case .Success(let languages): success(languages)
-                case .Failure(let error): failure?(error)
+                case .success(let languages): success(languages)
+                case .failure(let error): failure?(error)
                 }
             }
     }
 
     /**
      Identify the language of the given text.
-
+     
      - parameter text: The text whose language shall be identified.
      - parameter failure: A function executed if an error occurs.
      - parameter success: A function executed with all identified languages in the given text.
      */
     public func identify(
         text: String,
-        failure: (NSError -> Void)? = nil,
-        success: [IdentifiedLanguage] -> Void)
+        failure: ((Error) -> Void)? = nil,
+        success: @escaping ([IdentifiedLanguage]) -> Void)
     {
         // convert text to NSData with UTF-8 encoding
-        guard let body = text.dataUsingEncoding(NSUTF8StringEncoding) else {
+        guard let body = text.data(using: String.Encoding.utf8) else {
             let failureReason = "Text could not be encoded to NSData with NSUTF8StringEncoding."
             let userInfo = [NSLocalizedFailureReasonErrorKey: failureReason]
             let error = NSError(domain: domain, code: 0, userInfo: userInfo)
@@ -430,21 +428,20 @@ public class LanguageTranslator {
 
         // construct REST request
         let request = RestRequest(
-            method: .POST,
+            method: .post,
             url: serviceURL + "/v2/identify",
+            headerParameters: defaultHeaders,
             acceptType: "application/json",
             contentType: "text/plain",
-            userAgent: userAgent,
             messageBody: body
         )
 
         // execute REST request
         request.authenticate(user: username, password: password)
-            .responseArray(dataToError: dataToError, path: ["languages"]) {
-                (response: Response<[IdentifiedLanguage], NSError>) in
+            .responseArray(path: ["languages"]) { (response: DataResponse<[IdentifiedLanguage]>) in
                 switch response.result {
-                case .Success(let languages): success(languages)
-                case .Failure(let error): failure?(error)
+                case .success(let languages): success(languages)
+                case .failure(let error): failure?(error)
                 }
             }
     }
