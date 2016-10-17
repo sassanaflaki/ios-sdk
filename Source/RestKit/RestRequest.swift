@@ -138,9 +138,9 @@ public class RestRequest {
         return self
     }
     
-//    public func download(destination: DownloadRequest.DownloadFileDestination) -> Request {
-//        return Alamofire.download(self.mutableURLRequest, destination: destination)
-//    }
+    public func download(destination: DownloadRequest.DownloadFileDestination) -> Request {
+        return Alamofire.download(self.mutableURLRequest, destination: destination)
+    }
 
     public func responseData(queue queue: DispatchQueue? = nil, completionHandler: @escaping (DataResponse<Data>) -> Void) -> Self {
         request.responseData(queue: queue, completionHandler: completionHandler)
@@ -158,14 +158,14 @@ public class RestRequest {
         return self
     }
     
-//    public func upload(multipartFormData: (MultipartFormData) -> Void, encodingMemoryThreshold: UInt64 = SessionManager.multipartFormDataEncodingMemoryThreshold, encodingCompletion: ((SessionManager.MultipartFormDataEncodingResult) -> Void)?)
-//    {
-//        Alamofire.upload(self.mutableURLRequest, multipartFormData: multipartFormData, encodingMemoryThreshold: encodingMemoryThreshold, encodingCompletion: encodingCompletion)
-//    }
-//    
-//    public func upload(file: NSURL) -> Request {
-//        return Alamofire.upload(self.mutableURLRequest, file: file)
-//    }
+    public func upload(multipartFormData: (MultipartFormData) -> Void, encodingMemoryThreshold: UInt64 = SessionManager.multipartFormDataEncodingMemoryThreshold, encodingCompletion: ((SessionManager.MultipartFormDataEncodingResult) -> Void)?)
+    {
+        Alamofire.upload(self.mutableURLRequest, multipartFormData: multipartFormData, encodingMemoryThreshold: encodingMemoryThreshold, encodingCompletion: encodingCompletion)
+    }
+    
+    public func upload(file: NSURL) -> Request {
+        return Alamofire.upload(self.mutableURLRequest, file: file)
+    }
     
     public func validate() -> Self {
         request.validate()
