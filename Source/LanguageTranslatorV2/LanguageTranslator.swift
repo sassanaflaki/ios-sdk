@@ -157,10 +157,10 @@ public class LanguageTranslator {
         )
 
         // execute REST request
-        request.upload({ multipartFormData in
+        request.upload(
+            multipartFormData: { multipartFormData in
                 multipartFormData.append(forcedGlossary, withName: "forced_glossary")
             },
-            with: request,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
                 case .success(let upload, _, _):

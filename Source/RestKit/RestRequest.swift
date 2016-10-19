@@ -19,6 +19,22 @@ import Alamofire
 import Freddy
 
 /**
+ 
+ // what happens now
+ let request = RestRequest(...)
+ Alamofire.execute(request) { ... }
+ 
+ // to be
+ let request = RestRequest(...)
+ request.execute { ... }
+ 
+ 
+ */
+
+
+
+
+/**
  A `RestRequest` object represents a REST request to a remote server.
  
  The `RestRequest` object captures all common arguments required to construct
@@ -28,7 +44,7 @@ import Freddy
 public class RestRequest {
     
     private let request: DataRequest
-//    private let mutableURLRequest: NSMutableURLRequest
+    private let urlRequest: URLRequest
     
     /// Properties to store additional requests if 401 is received
     // private typealias CachedTask = (NSURLResponse?, AnyObject?, NSError?) -> Void
@@ -119,7 +135,7 @@ public class RestRequest {
         
         // create Alamofire request
         self.request = Alamofire.request(request)
-//        self.mutableURLRequest = request
+        self.urlRequest = request
     }
 
     public func authenticate(user user: String, password: String, persistence: URLCredential.Persistence = .forSession) -> Self {
@@ -138,8 +154,8 @@ public class RestRequest {
         return self
     }
     
-    public func download(destination: DownloadRequest.DownloadFileDestination) -> Request {
-        return Alamofire.download(self.mutableURLRequest, destination: destination)
+    public func download(to destination: DownloadRequest.DownloadFileDestination?) -> DownloadRequest {
+        return Alamofire.download(self.urlRequest, to: destination)
     }
 
     public func responseData(queue queue: DispatchQueue? = nil, completionHandler: @escaping (DataResponse<Data>) -> Void) -> Self {
@@ -158,13 +174,13 @@ public class RestRequest {
         return self
     }
     
-    public func upload(multipartFormData: (MultipartFormData) -> Void, encodingMemoryThreshold: UInt64 = SessionManager.multipartFormDataEncodingMemoryThreshold, encodingCompletion: ((SessionManager.MultipartFormDataEncodingResult) -> Void)?)
+    public func upload(multipartFormData: @escaping (MultipartFormData) -> Void, encodingMemoryThreshold: UInt64 = SessionManager.multipartFormDataEncodingMemoryThreshold, encodingCompletion: ((SessionManager.MultipartFormDataEncodingResult) -> Void)?)
     {
-        Alamofire.upload(self.mutableURLRequest, multipartFormData: multipartFormData, encodingMemoryThreshold: encodingMemoryThreshold, encodingCompletion: encodingCompletion)
+        Alamofire.upload(multipartFormData: multipartFormData, usingThreshold: encodingMemoryThreshold, with: self.urlRequest, encodingCompletion: encodingCompletion)
     }
     
-    public func upload(file: NSURL) -> Request {
-        return Alamofire.upload(self.mutableURLRequest, file: file)
+    public func upload(file: URL) -> UploadRequest {
+        return Alamofire.upload(file, with: self.urlRequest)
     }
     
     public func validate() -> Self {

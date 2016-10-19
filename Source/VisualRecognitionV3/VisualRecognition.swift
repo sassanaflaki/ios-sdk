@@ -157,7 +157,8 @@ public class VisualRecognition {
         )
         
         // execute REST request
-        request.upload({ multipartFormData in
+        request.upload(
+            multipartFormData: { multipartFormData in
                 for positiveExample in positiveExamples {
                     let name = positiveExample.name + "_positive_examples"
                     if let examples = positiveExample.examples {
@@ -173,7 +174,6 @@ public class VisualRecognition {
                     multipartFormData.append(name, withName: "name")
                 }
             },
-            with: request,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
                 case .success(let upload, _, _):
@@ -316,7 +316,8 @@ public class VisualRecognition {
         )
         
         // execute REST request
-        request.upload({ multipartFormData in
+        request.upload(
+            multipartFormData: { multipartFormData in
                 if let positiveExamples = positiveExamples {
                     for positiveExample in positiveExamples {
                         let name = positiveExample.name + "_positive_examples"
@@ -331,7 +332,6 @@ public class VisualRecognition {
                     multipartFormData.append(examples, withName: name)
                 }
             },
-            with: request,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
                 case .success(let upload, _, _):
@@ -496,7 +496,8 @@ public class VisualRecognition {
         )
         
         // execute REST request
-        request.upload({ multipartFormData in
+        request.upload(
+            multipartFormData: { multipartFormData in
                 if let image = image {
                     multipartFormData.append(image, withName: "images_file")
                 }
@@ -504,7 +505,6 @@ public class VisualRecognition {
                     multipartFormData.append(parameters, withName: "parameters")
                 }
             },
-            with: request,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
                 case .success(let upload, _, _):
@@ -586,7 +586,8 @@ public class VisualRecognition {
         )
         
         // execute REST request
-        request.upload({ multipartFormData in
+        request.upload(
+            multipartFormData: { multipartFormData in
                 if let image = image {
                     multipartFormData.append(image, withName: "images_file")
                 }
@@ -594,7 +595,6 @@ public class VisualRecognition {
                     multipartFormData.append(parameters, withName: "parameters")
                 }
             },
-            with: request,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
                 case .success(let upload, _, _):
@@ -675,7 +675,8 @@ public class VisualRecognition {
         )
         
         // execute REST request
-        request.upload({ multipartFormData in
+        request.upload(
+            multipartFormData: { multipartFormData in
                 if let image = image {
                     multipartFormData.append(image, withName: "images_file")
                 }
@@ -683,7 +684,6 @@ public class VisualRecognition {
                     multipartFormData.append(parameters, withName: "parameters")
                 }
             },
-            with: request,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
                 case .success(let upload, _, _):

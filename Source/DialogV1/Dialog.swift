@@ -137,13 +137,12 @@ public class Dialog {
         )
 
         // execute REST request
-        Alamofire.upload(
+        request.upload(
             multipartFormData: { multipartFormData in
                 let nameData = name.data(using: String.Encoding.utf8)!
                 multipartFormData.append(nameData, withName: "name")
                 multipartFormData.append(fileURL, withName: "file")
             },
-            with: request,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
                 case .success(let upload, _, _):
@@ -269,7 +268,7 @@ public class Dialog {
         }
 
         // execute REST request
-        Alamofire.download(request, to: destination)
+        request.download(to: destination)
             .authenticate(user: username, password: password)
             .response { response in
                 guard response.error == nil else {
@@ -328,11 +327,10 @@ public class Dialog {
         )
 
         // execute REST request
-        Alamofire.upload(
+        request.upload(
             multipartFormData: { multipartFormData in
                 multipartFormData.append(fileURL, withName: "file")
             },
-            with: request,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
                 case .success(let upload, _, _):

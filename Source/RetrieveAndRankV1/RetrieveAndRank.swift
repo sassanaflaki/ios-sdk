@@ -399,7 +399,7 @@ public class RetrieveAndRank {
         )
         
         // execute REST request
-        request.upload(zipFile)
+        request.upload(file: zipFile)
             .authenticate(user: self.username, password: self.password)
             .responseData { response in
                 switch response.result {
@@ -570,10 +570,10 @@ public class RetrieveAndRank {
         )
         
         // execute REST request
-        request.upload({ multipartFormData in
+        request.upload(
+            multipartFormData: { multipartFormData in
                 multipartFormData.append(contentFile, withName: "body")
             },
-            with: request,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
                 case .success(let upload, _, _):
@@ -771,11 +771,11 @@ public class RetrieveAndRank {
         )
         
         // execute REST request
-        request.upload({ multipartFormData in
+        request.upload(
+            multipartFormData: { multipartFormData in
                 multipartFormData.append(trainingDataFile, withName: "training_data")
                 multipartFormData.append(trainingMetadata, withName: "training_metadata")
             },
-            with: request,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
                 case .success(let upload, _, _):
@@ -824,10 +824,10 @@ public class RetrieveAndRank {
         )
         
         // execute REST request
-        request.upload({ multipartFormData in
+        request.upload(
+            multipartFormData: { multipartFormData in
                 multipartFormData.append(resultsFile, withName: "answer_data")
             },
-            with: request,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
                 case .success(let upload, _, _):

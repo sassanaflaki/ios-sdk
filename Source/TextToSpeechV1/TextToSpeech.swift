@@ -622,7 +622,7 @@ public class TextToSpeech {
         )
         
         // execute the request
-        reuqest.authenticate(user: username, password: password)
+        request.authenticate(user: username, password: password)
             .responseObject() { (response: DataResponse<Translation>) in
                 switch response.result {
                 case .success(let translation): success(translation)

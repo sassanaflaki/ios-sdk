@@ -127,11 +127,11 @@ public class NaturalLanguageClassifier {
         )
         
         // execute REST request
-        request.upload({ multipartFormData in
+        request.upload(
+            multipartFormData: { multipartFormData in
                 multipartFormData.append(trainingMetadata, withName: "training_metadata")
                 multipartFormData.append(trainingData, withName: "training_data")
             },
-            with: request,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
                 case .success(let upload, _, _):

@@ -110,14 +110,14 @@ public class DocumentConversion {
         )
         
         // execute REST request
-        request.upload({ multipartFormData in
+        request.upload(
+            multipartFormData: { multipartFormData in
                 multipartFormData.append(config, withName: "config")
                 multipartFormData.append(document, withName: "file")
                 if let type = fileType?.rawValue.data(using: String.Encoding.utf8) {
                     multipartFormData.append(type, withName: "type")
                 }
             },
-            with: request,
             encodingCompletion: { encodingResult in
                 switch encodingResult {
                 case .success(let upload, _, _):

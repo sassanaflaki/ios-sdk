@@ -67,7 +67,8 @@ public class RestToken {
         success: ((Void) -> Void)? = nil)
     {
         tokenURL = tokenURL + "?url=" + serviceURL
-        Alamofire.request(.GET, tokenURL)
+//        Alamofire.request(.GET, tokenURL)
+        Alamofire.request(tokenURL)
             .authenticate(user: username, password: password)
             .validate()
             .responseString { response in
